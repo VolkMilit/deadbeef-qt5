@@ -1,5 +1,7 @@
 #include "PlayList.h"
 
+#include "config.h"
+
 #include <QApplication>
 #include <QVBoxLayout>
 #include <QHeaderView>
@@ -9,7 +11,8 @@
 #include <QtGuiSettings.h>
 #include <TabBar.h>
 
-PlayList::PlayList(QWidget *parent) : QTreeView(parent), playListModel(this) {
+PlayList::PlayList(QWidget *parent) : QTreeView(parent), playListModel(this)
+{
     setAutoFillBackground(false);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setDragEnabled(true);
@@ -218,6 +221,29 @@ void PlayList::createContextMenu() {
     QAction *separator2 = new QAction(this);
     separator2->setSeparator(true);
     addAction(separator2);
+#ifdef RGSCANNER_ENABLED
+    //replaygain
+    QAction *RGScan = new QAction(tr("ReplayGain"), this);
+    QMenu *RGScanMenu = new QMenu(this);
+    RGScan->setMenu(RGScanMenu);
+    addAction(RGScan);
+    
+    QAction *RGScanPerFile = new QAction(tr("Scan per-file track gain"), RGScanMenu);
+    connect(RGScanPerFile, SIGNAL(triggered()), this, SLOT(viewTrackProps()));
+    RGScan->menu()->addAction(RGScanPerFile);
+    
+    QAction *RGScanSingleAlbum = new QAction(tr("Scan selection as single album"), RGScanMenu);
+    connect(RGScanSingleAlbum, SIGNAL(triggered()), this, SLOT(viewTrackProps()));
+    RGScan->menu()->addAction(RGScanSingleAlbum);
+    
+    QAction *RGScanAlbums = new QAction(tr("Scan selection as albums(by tags)"), RGScanMenu);
+    connect(RGScanAlbums, SIGNAL(triggered()), this, SLOT(viewTrackProps()));
+    RGScan->menu()->addAction(RGScanAlbums);
+    
+    QAction *RGScanRemove = new QAction(tr("Remove replay gain infomation"), RGScanMenu);
+    connect(RGScanRemove, SIGNAL(triggered()), this, SLOT(viewTrackProps()));
+    RGScan->menu()->addAction(RGScanRemove);
+#endif
     //view properties
     QAction *viewProp = new QAction(tr("View track properties"), this);
     connect(viewProp, SIGNAL(triggered()), this, SLOT(viewTrackProps()));

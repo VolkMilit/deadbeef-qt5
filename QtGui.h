@@ -21,6 +21,12 @@ extern DB_artwork_plugin_t *coverart_plugin;
 extern DB_hotkeys_plugin_t *hotkeys_plugin;
 #endif
 
+#ifdef RGSCANNER_ENABLED
+#include <plugins/RGScanner/include/rg_scanner.h>
+#define RGSCANNER rgscanner_plugin
+extern ddb_rg_scanner_t *rgscanner_plugin;
+#endif
+
 #define PLUGIN plugin
 #define DBAPI deadbeef
 

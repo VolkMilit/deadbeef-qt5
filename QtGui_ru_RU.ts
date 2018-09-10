@@ -816,38 +816,63 @@
 <context>
     <name>PlayList</name>
     <message>
-        <location filename="PlayList.cpp" line="180"/>
+        <location filename="PlayList.cpp" line="183"/>
         <source>Reload Metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="PlayList.cpp" line="214"/>
+        <location filename="PlayList.cpp" line="217"/>
         <source>Remove track(s) from disk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="PlayList.cpp" line="222"/>
+        <location filename="PlayList.cpp" line="226"/>
+        <source>ReplayGain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PlayList.cpp" line="248"/>
         <source>View track properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="PlayList.cpp" line="231"/>
+        <location filename="PlayList.cpp" line="257"/>
         <source>Lock columns</source>
         <translation>Заблокировать столбцы</translation>
     </message>
     <message>
-        <location filename="PlayList.cpp" line="238"/>
+        <location filename="PlayList.cpp" line="264"/>
         <source>Columns</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="PlayList.cpp" line="246"/>
-        <location filename="PlayList.cpp" line="331"/>
+        <location filename="PlayList.cpp" line="272"/>
+        <location filename="PlayList.cpp" line="357"/>
         <source>Status</source>
         <translation type="unfinished">Статус</translation>
     </message>
     <message>
-        <location filename="PlayList.cpp" line="209"/>
+        <location filename="PlayList.cpp" line="231"/>
+        <source>Scan per-file track gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PlayList.cpp" line="235"/>
+        <source>Scan selection as single album</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PlayList.cpp" line="239"/>
+        <source>Scan selection as albums(by tags)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PlayList.cpp" line="243"/>
+        <source>Remove replay gain infomation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PlayList.cpp" line="212"/>
         <source>Remove track(s)</source>
         <translation>Удалить трек(и)</translation>
     </message>

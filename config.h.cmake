@@ -3,5 +3,6 @@
 
 #cmakedefine ARTWORK_ENABLED
 #cmakedefine HOTKEYS_ENABLED
+#cmakedefine RGSCANNER_ENABLED
 
 #endif // CONFIG_H

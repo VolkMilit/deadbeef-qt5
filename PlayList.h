@@ -44,7 +44,6 @@ private:
 
     bool eventFilter(QObject *obj, QEvent *event);
 
-
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
