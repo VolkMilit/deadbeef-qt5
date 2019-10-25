@@ -31,7 +31,9 @@ public:
 private:
     QVBoxLayout vbox;
     QTabWidget tabWidget;
-    QDialogButtonBox buttonBox;
+    QHBoxLayout hBoxButtons;
+    QPushButton buttonOk;
+    QPushButton buttonApply;
 
     InterfacePreferencesWidget interfaceWidget;
     SoundPreferencesWidget soundWidget;
@@ -47,7 +49,8 @@ private:
     void configureConnections();
     
 private slots:
-    void on_buttonBox_accepted();
+    void on_buttonOk_clicked();
+    void on_buttonApply_clicked();
 
 signals:
     void setTrayIconHidden(bool);

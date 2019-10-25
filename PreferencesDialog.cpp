@@ -6,7 +6,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
         QDialog(parent, Qt::WindowTitleHint),
         vbox(this),
         tabWidget(this),
-        buttonBox(this),
+        hBoxButtons(this),
+        buttonOk(this),
+        buttonApply(this),
         interfaceWidget(this),
         soundWidget(this),
         dspWidget(this),
@@ -19,7 +21,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     setModal(true);
     setWindowTitle(tr("Preferences"));
     setWindowIcon(getStockIcon(this, "preferences-system", QStyle::SP_CustomBase));
-    buttonBox.setStandardButtons(QDialogButtonBox::Ok);
+
+    buttonApply.setText("Apply");
+    buttonOk.setText("Ok");
+
+    hBoxButtons.addWidget(&buttonApply);
+    hBoxButtons.addWidget(&buttonOk);
+
     configureTabs();
     configureLayout();
     configureConnections();
@@ -42,7 +50,7 @@ void PreferencesDialog::configureTabs()
 void PreferencesDialog::configureLayout()
 {
     vbox.addWidget(&tabWidget);
-    vbox.addWidget(&buttonBox);
+    vbox.addItem(&hBoxButtons);
 }
 
 void PreferencesDialog::configureConnections()
@@ -52,11 +60,17 @@ void PreferencesDialog::configureConnections()
     connect(&interfaceWidget, SIGNAL(setTrayIconTheme(const QString &)), SIGNAL(setTrayIconTheme(const QString &)));
     connect(&interfaceWidget, SIGNAL(titlePlayingChanged()), SIGNAL(titlePlayingChanged()));
     connect(&interfaceWidget, SIGNAL(titleStoppedChanged()), SIGNAL(titleStoppedChanged()));
-    connect(&buttonBox, SIGNAL(accepted()), SLOT(on_buttonBox_accepted()));
+    connect(&buttonOk, &QPushButton::clicked, this, &PreferencesDialog::on_buttonOk_clicked);
+    connect(&buttonApply, &QPushButton::clicked, this, &PreferencesDialog::on_buttonApply_clicked);
 }
 
-void PreferencesDialog::on_buttonBox_accepted()
+void PreferencesDialog::on_buttonOk_clicked()
 {
     DBAPI->sendmessage(DB_EV_CONFIGCHANGED, 0, 0, 0);
     close();
+}
+
+void PreferencesDialog::on_buttonApply_clicked()
+{
+    DBAPI->sendmessage(DB_EV_CONFIGCHANGED, 0, 0, 0);
 }
