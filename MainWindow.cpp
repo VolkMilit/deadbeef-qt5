@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QDateTime>
 
 #include "QtGuiSettings.h"
 
@@ -33,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
         trayMenu(nullptr),
         volumeSlider(this),
         progressBar(this),
+        status(this),
 #ifdef ARTWORK_ENABLED
         coverArtWidget(this),
 #endif
@@ -55,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
     updateTitle();
     
     ui->PlayBackToolBar->show();
+
+    ui->statusBar->addWidget(&status);
 }
 
 void MainWindow::Destroy()
@@ -82,6 +86,11 @@ void MainWindow::createConnections()
     connect(DBApiWrapper::Instance(), SIGNAL(trackChanged(DB_playItem_t*,DB_playItem_t*)), this, SLOT(trackChanged(DB_playItem_t *, DB_playItem_t *)));
     connect(ui->actionNewPlaylist, SIGNAL(triggered()), ui->playList, SIGNAL(newPlaylist()));
     connect(DBApiWrapper::Instance(), SIGNAL(deadbeefActivated()), this, SLOT(on_deadbeefActivated()));
+
+    connect(&progressBar, &SeekSlider::valueChanged, [this](){
+        DB_playItem_s *it = DBAPI->streamer_get_playing_track();
+        updateStatusBar(it);
+    });
 }
 
 void MainWindow::loadIcons()
@@ -138,8 +147,8 @@ void MainWindow::createTray()
     trayIcon->setContextMenu(trayMenu);
     trayIcon->show();
 
-    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayIcon_activated(QSystemTrayIcon::ActivationReason)));
-    connect(trayIcon, SIGNAL(wheeled(int)), this, SLOT(trayIcon_wheeled(int)));
+    connect(trayIcon, &SystemTrayIcon::activated, this, &MainWindow::trayIcon_activated);
+    connect(trayIcon, &SystemTrayIcon::wheeled, this, &MainWindow::trayIcon_wheeled);
 }
 
 void MainWindow::titleSettingChanged()
@@ -276,11 +285,9 @@ void MainWindow::trayIcon_activated(QSystemTrayIcon::ActivationReason reason)
         else
             hide();
     }
-    if (reason == QSystemTrayIcon::MiddleClick)
-    {
-        DBAPI->sendmessage(DB_EV_TOGGLE_PAUSE, 0, 0, 0);
-    }
 
+    if (reason == QSystemTrayIcon::MiddleClick)
+        DBAPI->sendmessage(DB_EV_TOGGLE_PAUSE, 0, 0, 0);
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -294,7 +301,22 @@ void MainWindow::trayIcon_wheeled(int delta)
     volumeSlider.setValue(volumeSlider.value() + signum(delta));
 }
 
-void MainWindow::trackChanged(DB_playItem_t *from, DB_playItem_t *to)
+void MainWindow::updateStatusBar(DB_playItem_t *it)
+{
+    if (it)
+    {
+        QString type = QString::fromLatin1(DBAPI->pl_find_meta(it, ":FILETYPE"));
+        QString duration = DBAPI->pl_find_meta(it, ":DURATION");
+
+        int all = (duration.split(":")[0].toInt() * 60000) + (duration.split(":")[1].toInt() * 1000);
+
+        QDateTime msec;
+        msec.setMSecsSinceEpoch(all * DBAPI->playback_get_pos() / 100);
+        status.setText(type + " | " + msec.toString("mm:ss") + " / " + duration);
+    }
+}
+
+void MainWindow::trackChanged(DB_playItem_t *, DB_playItem_t *to)
 {
     if (to != NULL)
     {
@@ -365,14 +387,16 @@ void MainWindow::on_actionPreferences_triggered()
     if (!prefDialog)
     {
         prefDialog = new PreferencesDialog(this);
-        connect(prefDialog, SIGNAL(setCloseOnMinimize(bool)), this, SLOT(setCloseOnMinimized(bool)));
-        connect(prefDialog, SIGNAL(setTrayIconHidden(bool)), this, SLOT(setTrayIconHidden(bool)));
-        connect(prefDialog, SIGNAL(setTrayIconTheme(const QString &)), this, SLOT(setTrayIconTheme(const QString &)));
-        connect(prefDialog, SIGNAL(titlePlayingChanged()), this, SLOT(titleSettingChanged()));
-        connect(prefDialog, SIGNAL(titleStoppedChanged()), this, SLOT(titleSettingChanged()));
+
+        connect(prefDialog, &PreferencesDialog::setCloseOnMinimize, this, &MainWindow::setCloseOnMinimized);
+        connect(prefDialog, &PreferencesDialog::setTrayIconHidden, this, &MainWindow::setTrayIconHidden);
+        connect(prefDialog, &PreferencesDialog::setTrayIconTheme, this, &MainWindow::setTrayIconTheme);
+        connect(prefDialog, &PreferencesDialog::titlePlayingChanged, this, &MainWindow::titleSettingChanged);
+        connect(prefDialog, &PreferencesDialog::titleStoppedChanged, this, &MainWindow::titleSettingChanged);
+
         prefDialog->exec();
+
         delete prefDialog;
-        prefDialog = nullptr;
     }
     else
     {
@@ -688,5 +712,6 @@ void MainWindow::on_actionHideTabBar_triggered()
 
 void MainWindow::on_deadbeefActivated()
 {
-    if (isHidden()) show();
+    if (isHidden())
+        show();
 }
