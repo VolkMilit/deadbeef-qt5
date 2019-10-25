@@ -14,7 +14,7 @@ class SeekSlider : public QSlider {
     Q_OBJECT
 
 public:
-    SeekSlider(QWidget *parent = 0);
+    SeekSlider(QWidget *parent = nullptr);
     ~SeekSlider();
 
 protected slots:

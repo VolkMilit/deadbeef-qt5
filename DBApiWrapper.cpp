@@ -13,11 +13,10 @@ DBApiWrapper::DBApiWrapper() {
 void DBApiWrapper::Destroy() {
     DBAPI->sendmessage(DB_EV_TERMINATE, 0, 0, 0);
     delete instance;
-    instance = NULL;
 }
 
 DBApiWrapper *DBApiWrapper::Instance() {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new DBApiWrapper();
     }
 

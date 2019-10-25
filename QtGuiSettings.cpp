@@ -33,11 +33,10 @@ QtGuiSettings::QtGuiSettings() : settings(this) {
 
 void QtGuiSettings::Destroy() {
     delete instance;
-    instance = NULL;
 }
 
 QtGuiSettings *QtGuiSettings::Instance() {
-    if (instance != NULL) delete instance;
+    if (instance != nullptr) delete instance;
     instance = new QtGuiSettings();
     return instance;
 }

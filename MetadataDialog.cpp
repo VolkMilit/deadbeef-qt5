@@ -229,7 +229,7 @@ void MetadataDialog::on_btnApply_clicked()
 {
     //QProgressDialog *
     metaUpdateProgress = new QProgressDialog(tr("Updating metadata..."), "", 0, 0, this);
-    metaUpdateProgress->setCancelButton(0);
+    metaUpdateProgress->setCancelButton(nullptr);
     metaUpdateProgress->setWindowModality(Qt::WindowModal);
     //metaUpdateProgress->setAttribute(Qt::WA_DeleteOnClose);
     metaUpdateProgress->setWindowFlags(Qt::Dialog|Qt::WindowTitleHint|Qt::CustomizeWindowHint);

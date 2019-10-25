@@ -10,7 +10,7 @@ class VolumeSlider : public QSlider {
     Q_OBJECT
 
 public:
-    VolumeSlider(QWidget *parent = 0);
+    VolumeSlider(QWidget *parent = nullptr);
 
     void setValue(int value);
     

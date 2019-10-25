@@ -2,20 +2,19 @@
 
 #include <QtGuiSettings.h>
 
-GuiUpdater *GuiUpdater::instance = NULL;
+GuiUpdater *GuiUpdater::instance = nullptr;
 
 GuiUpdater::GuiUpdater(QObject *parent) {
     startSpecificTimer();
 }
 
 void GuiUpdater::Destroy() {
-    if (instance != NULL)
+    if (instance != nullptr)
         delete instance;
-    instance = NULL;
 }
 
 GuiUpdater *GuiUpdater::Instance() {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new GuiUpdater();
     }
     

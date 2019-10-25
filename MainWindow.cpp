@@ -19,7 +19,7 @@
 #include <QFutureWatcher>
 #include "DBFileDialog.h"
 
-MainWindow *MainWindow::instance = NULL;
+MainWindow *MainWindow::instance = nullptr;
 
 template <typename T>
 int signum(T val) {
@@ -58,13 +58,12 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::Destroy() {
-    if (instance != NULL)
+    if (instance != nullptr)
         delete instance;
-    instance = NULL;
 }
 
 MainWindow *MainWindow::Instance() {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new MainWindow();
     }
     
@@ -401,7 +400,7 @@ void MainWindow::on_actionBlockToolbarChanges_triggered() {
     if (ui->actionBlockToolbarChanges->isChecked())
         coverArtWidget.setTitleBarWidget(new QWidget());
     else
-        coverArtWidget.setTitleBarWidget(0);
+        coverArtWidget.setTitleBarWidget(nullptr);
 #endif
 }
 

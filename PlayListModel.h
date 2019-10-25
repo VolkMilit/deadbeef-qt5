@@ -14,7 +14,7 @@ class PlayListModel : public QAbstractItemModel {
     Q_OBJECT
     
 public:
-    PlayListModel(QObject *parent = 0);
+    PlayListModel(QObject *parent = nullptr);
     
     void loadConfig();
     void saveConfig();

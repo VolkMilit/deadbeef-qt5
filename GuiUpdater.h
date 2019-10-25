@@ -15,7 +15,7 @@ public:
     void resetTimer(int tick);
     
 private:
-    GuiUpdater(QObject* parent = 0);
+    GuiUpdater(QObject* parent = nullptr);
     static GuiUpdater *instance;
 
     bool killTimerAtNextTick;

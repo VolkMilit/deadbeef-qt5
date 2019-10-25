@@ -6,7 +6,7 @@ SystemTrayIcon::SystemTrayIcon(const QIcon &icon, QObject *parent) :
 
 bool SystemTrayIcon::event(QEvent *event) {
     if (event->type() == QEvent::Wheel) {
-        QWheelEvent *wheelevent = (QWheelEvent *)event;
+        QWheelEvent *wheelevent = static_cast<QWheelEvent *>(event);
         emit wheeled(wheelevent->delta());
         event->accept();
         return true;

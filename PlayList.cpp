@@ -12,6 +12,8 @@
 #include <QProcess>
 #include <QDir>
 
+#include <algorithm>
+
 PlayList::PlayList(QWidget *parent) : QTreeView(parent), playListModel(this) {
     setAutoFillBackground(false);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -53,7 +55,7 @@ PlayList::PlayList(QWidget *parent) : QTreeView(parent), playListModel(this) {
 
 bool PlayList::eventFilter(QObject *target, QEvent *event) {
     if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = (QKeyEvent *)event;
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         if ((keyEvent->key() == Qt::Key_Enter) || (keyEvent->key() == Qt::Key_Return)) {
             emit enterRelease(currentIndex());
             return true;
@@ -75,7 +77,7 @@ void PlayList::createConnections() {
 }
 
 void PlayList::refresh() {
-    setModel(NULL);
+    setModel(nullptr);
     playListModel.sortCount = 0;
     setModel(&playListModel);
     header()->restoreState(headerState);
@@ -131,7 +133,7 @@ void PlayList::dragEnterEvent(QDragEnterEvent *event) {
 
 void PlayList::dropEvent(QDropEvent *event) {
     if (event->mimeData()->hasUrls()) {
-        int count = pltItemCount();;
+        int count = pltItemCount();
         int row = indexAt(event->pos()).row();
         int before = (row >= 0) ? row - 1 : count - 1;
         foreach (QUrl url, event->mimeData()->urls()) {
@@ -154,7 +156,7 @@ void PlayList::dropEvent(QDropEvent *event) {
             newItems[row] = text;
         }
         QList<int> rows = newItems.keys();
-        qSort(rows.begin(), rows.end());
+        std::sort(rows.begin(), rows.end());
         playListModel.moveItems(rows, row);
         event->setDropAction(Qt::CopyAction);
         event->accept();
