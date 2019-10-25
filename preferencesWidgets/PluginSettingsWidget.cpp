@@ -192,7 +192,8 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog)
             //label->setMaximumWidth(400);
             prop = new QFileRequester(QString(value), this);
             addEntryWithLabel(layout, label, prop, HLayout);
-            connect(prop, QOverload<void>(&QFileRequester::changed), this, &PluginSettingsWidget::saveProperty);
+            // TODO
+            //connect(prop, QOverload<void>(&QFileRequester::changed), this, &PluginSettingsWidget::saveProperty);
         }
         else if (!strncmp(type, "select[", 7))
         {

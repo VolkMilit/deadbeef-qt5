@@ -11,8 +11,10 @@ namespace Ui {
     class SoundPreferencesWidget;
 }
 
-class SoundPreferencesWidget : public QWidget {
+class SoundPreferencesWidget : public QWidget
+{
     Q_OBJECT
+
 public:
     SoundPreferencesWidget(QWidget* parent = nullptr, Qt::WindowFlags f = nullptr);
     

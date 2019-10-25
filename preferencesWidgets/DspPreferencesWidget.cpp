@@ -122,12 +122,12 @@ void DspPreferencesWidget::createConnections()
 {
     connect(ui->dspAddBtn, &QPushButton::clicked, this, &DspPreferencesWidget::addDsp);
     connect(ui->dspRmBtn, &QPushButton::clicked, this, &DspPreferencesWidget::rmDsp);
-    connect(ui->dspConfBtn, &QPushButton::clicked, &DspPreferencesWidget::openDspConf);
-    connect(ui->dspUpBtn, &QPushButton::clicked, &DspPreferencesWidget::dspUp);
-    connect(ui->dspDownBtn, &QPushButton::clicked, &DspPreferencesWidget::dspDown);
-    connect(ui->presetDelBtn, &QPushButton::clicked, &DspPreferencesWidget::deletePreset);
-    connect(ui->presetSaveBtn, &QPushButton::clicked, &DspPreferencesWidget::savePreset);
-    connect(ui->presetLoadBtn, &QPushButton::clicked, &DspPreferencesWidget::loadPreset);
+    connect(ui->dspConfBtn, &QPushButton::clicked, this, &DspPreferencesWidget::openDspConf);
+    connect(ui->dspUpBtn, &QPushButton::clicked, this, &DspPreferencesWidget::dspUp);
+    connect(ui->dspDownBtn, &QPushButton::clicked, this, &DspPreferencesWidget::dspDown);
+    connect(ui->presetDelBtn, &QPushButton::clicked, this, &DspPreferencesWidget::deletePreset);
+    connect(ui->presetSaveBtn, &QPushButton::clicked, this, &DspPreferencesWidget::savePreset);
+    connect(ui->presetLoadBtn, &QPushButton::clicked, this, &DspPreferencesWidget::loadPreset);
 }
 
 void DspPreferencesWidget::loadPreset()

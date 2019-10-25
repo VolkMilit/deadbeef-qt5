@@ -108,22 +108,29 @@ void PluginsPreferencesWidget::loadPluginInfo(int item)
     ui->scrollAreaWidgetContents->layout()->addItem(spacer);
 }
 
-void PluginsPreferencesWidget::configurePluginSettingsPanel(ddb_dialog_t *conf) {
-    if (settingsWidget) {
+void PluginsPreferencesWidget::configurePluginSettingsPanel(ddb_dialog_t *conf)
+{
+    if (settingsWidget)
+    {
         ui->scrollAreaWidgetContents->layout()->removeWidget(settingsWidget);
         delete settingsWidget;
     }
+
     settingsWidget = new PluginSettingsWidget(conf, this);
     ui->scrollAreaWidgetContents->layout()->addWidget(settingsWidget);
 }
 
-void PluginsPreferencesWidget::openUrl() {
+void PluginsPreferencesWidget::openUrl()
+{
     QDesktopServices::openUrl(QUrl(ui->linkButton->toolTip()));
 }
 
-void PluginsPreferencesWidget::changeEvent(QEvent *e) {
+void PluginsPreferencesWidget::changeEvent(QEvent *e)
+{
     QWidget::changeEvent(e);
-    switch (e->type()) {
+
+    switch (e->type())
+    {
         case QEvent::LanguageChange:
             ui->retranslateUi(this);
             break;
@@ -144,6 +151,7 @@ CopyrightDialog::CopyrightDialog(QWidget *parent, Qt::WindowFlags f):
     vbox.addWidget(&textEdit);
 }
 
-void CopyrightDialog::setText(const QString &text) {
+void CopyrightDialog::setText(const QString &text)
+{
     textEdit.setText(text);
 }

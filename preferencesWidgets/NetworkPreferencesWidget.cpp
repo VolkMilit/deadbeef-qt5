@@ -57,12 +57,12 @@ void NetworkPreferencesWidget::loadSettings()
 
 void NetworkPreferencesWidget::createConnections()
 {
-    connect(ui->enableProxyCheckBox, SIGNAL(toggled(bool)), SLOT(enableProxy(bool)));
-    connect(ui->proxyAddressLineEdit, SIGNAL(editingFinished()), SLOT(saveProxyAddress()));
-    connect(ui->proxyPasswordLineEdit, SIGNAL(editingFinished()), SLOT(saveProxyPassword()));
-    connect(ui->proxyPortSpinBox, SIGNAL(editingFinished()), SLOT(saveProxyPort()));
-    connect(ui->proxyTypeComboBox, SIGNAL(currentIndexChanged(int)), SLOT(saveProxyType(int)));
-    connect(ui->proxyUsernameLineEdit, SIGNAL(editingFinished()), SLOT(saveProxyUsername()));
+    connect(ui->enableProxyCheckBox, &QCheckBox::toggled, this, &NetworkPreferencesWidget::enableProxy);
+    connect(ui->proxyAddressLineEdit, &QLineEdit::editingFinished, this, &NetworkPreferencesWidget::saveProxyAddress);
+    connect(ui->proxyPasswordLineEdit, &QLineEdit::editingFinished, this, &NetworkPreferencesWidget::saveProxyPassword);
+    connect(ui->proxyPortSpinBox, &QSpinBox::editingFinished, this, &NetworkPreferencesWidget::saveProxyPort);
+    connect(ui->proxyTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &NetworkPreferencesWidget::saveProxyType);
+    connect(ui->proxyUsernameLineEdit, &QLineEdit::editingFinished, this, &NetworkPreferencesWidget::saveProxyUsername);
 }
 
 void NetworkPreferencesWidget::enableProxy(bool enabled)
