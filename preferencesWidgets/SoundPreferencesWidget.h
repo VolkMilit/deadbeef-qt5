@@ -5,6 +5,8 @@
 #include <QHash>
 #include <QIntValidator>
 
+enum { DDB_RG_PROCESSING_NONE = 0, DDB_RG_PROCESSING_GAIN = 1, DDB_RG_PROCESSING_PREVENT_CLIPPING = 2, };
+
 namespace Ui {
     class SoundPreferencesWidget;
 }
