@@ -265,7 +265,7 @@ void PluginSettingsWidget::addEntryWithLabel(QLayout *layout, QLabel *label, QWi
     if (HLayout)
     {
         QHBoxLayout *hBoxLayout = qobject_cast<QHBoxLayout *>(layout);
-        QVBoxLayout *vbox = new QVBoxLayout(0);
+        QVBoxLayout *vbox = new QVBoxLayout(nullptr);
         vbox->addWidget(prop);
         vbox->addWidget(label);
         hBoxLayout->addLayout(vbox);

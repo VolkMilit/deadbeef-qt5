@@ -12,7 +12,7 @@ class CoverArtCache : public QObject {
     Q_OBJECT
 
 public:
-    static CoverArtCache *Instance(QObject *parent = 0);
+    static CoverArtCache *Instance(QObject *parent = nullptr);
     static void Destroy();
 
     void getCoverArt(const char *fname, const char *artist, const char *album);
@@ -23,7 +23,7 @@ public:
     void clear();
 
 private:
-    CoverArtCache(QObject *parent = 0);
+    CoverArtCache(QObject *parent = nullptr);
     static CoverArtCache *instance;
 
     QHash<QString, const QImage *> cache;

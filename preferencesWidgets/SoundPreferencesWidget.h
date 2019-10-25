@@ -14,7 +14,7 @@ namespace Ui {
 class SoundPreferencesWidget : public QWidget {
     Q_OBJECT
 public:
-    SoundPreferencesWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    SoundPreferencesWidget(QWidget* parent = nullptr, Qt::WindowFlags f = nullptr);
     
     void addDevice(const char *name, const char *desc);
     
@@ -29,7 +29,7 @@ private:
 protected:
     void changeEvent(QEvent *e);
 
-private Q_SLOTS:
+private slots:
     void changeOutputDevice(int);
     void changeOutputPlugin(int);
     void changeReplaygainMode(int);
@@ -48,8 +48,6 @@ private Q_SLOTS:
     void saveDependentSR(bool enabled);
     void saveSRMulti48();
     void saveSRMulti44();
-//Q_SIGNALS:
-    
 };
 
 #endif // SOUNDPREFERENCESWIDGET_H

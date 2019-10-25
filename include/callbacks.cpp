@@ -49,7 +49,7 @@ void dsp_conf_get_str(const char *key, char *value, int len, const char *def) {
 QIcon getStockIcon(QWidget *widget, const QString &freedesktop_name, int fallback) {
     QIcon fallbackIcon;
     if (fallback > 0)
-        fallbackIcon = widget->style()->standardIcon(QStyle::StandardPixmap(fallback), 0, widget);
+        fallbackIcon = widget->style()->standardIcon(QStyle::StandardPixmap(fallback), nullptr, widget);
     return QIcon::fromTheme(freedesktop_name, fallbackIcon);
 }
 

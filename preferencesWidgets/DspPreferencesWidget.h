@@ -15,7 +15,7 @@ namespace Ui {
 class DspPreferencesWidget : public QWidget {
     Q_OBJECT
 public:
-    DspPreferencesWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    DspPreferencesWidget(QWidget* parent = nullptr, Qt::WindowFlags f = nullptr);
     ~DspPreferencesWidget();
 private:
     Ui::DspPreferencesWidget *ui;

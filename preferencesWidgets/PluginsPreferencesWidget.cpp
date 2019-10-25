@@ -15,8 +15,8 @@ PluginsPreferencesWidget::PluginsPreferencesWidget(QWidget *parent, Qt::WindowFl
     ui->setupUi(this);
     ui->copyrightButton->setIcon(getStockIcon(ui->copyrightButton, "user-identity", QStyle::SP_MessageBoxInformation));
     ui->linkButton->setIcon(getStockIcon(ui->linkButton, "applications-internet", QStyle::SP_DirLinkIcon));
-    settingsWidget = NULL;
-    spacer = NULL;
+    settingsWidget = nullptr;
+    spacer = nullptr;
     createPluginsSettings();
 }
 
@@ -73,7 +73,6 @@ void PluginsPreferencesWidget::loadPluginInfo(int item) {
     if (spacer) {
         ui->scrollAreaWidgetContents->layout()->removeItem(spacer);
         delete spacer;
-        spacer = NULL;
     }
     
     if (plugin->configdialog) {
@@ -86,7 +85,6 @@ void PluginsPreferencesWidget::loadPluginInfo(int item) {
     else {
         if (settingsWidget) {
             delete settingsWidget;
-            settingsWidget = NULL;
         }
     }
     spacer = new QSpacerItem(10, 5, QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -97,7 +95,6 @@ void PluginsPreferencesWidget::configurePluginSettingsPanel(ddb_dialog_t *conf) 
     if (settingsWidget) {
         ui->scrollAreaWidgetContents->layout()->removeWidget(settingsWidget);
         delete settingsWidget;
-        settingsWidget = NULL;
     }
     settingsWidget = new PluginSettingsWidget(conf, this);
     ui->scrollAreaWidgetContents->layout()->addWidget(settingsWidget);

@@ -11,7 +11,7 @@ class CoverArtWidget : public QDockWidget {
     Q_OBJECT
 
 public:
-    CoverArtWidget(QWidget *parent = 0);
+    CoverArtWidget(QWidget *parent = nullptr);
     ~CoverArtWidget();
 
     void updateCover(DB_playItem_t *track = NULL);

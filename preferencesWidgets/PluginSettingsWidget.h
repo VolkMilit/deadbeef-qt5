@@ -13,8 +13,8 @@ class PluginSettingsWidget : public QGroupBox
 {
     Q_OBJECT
 public:
-    PluginSettingsWidget(ddb_dialog_t *conf, QWidget *parent = 0);
-    PluginSettingsWidget(ddb_dsp_context_t *dsp, QWidget *parent = 0);
+    PluginSettingsWidget(ddb_dialog_t *conf, QWidget *parent = nullptr);
+    PluginSettingsWidget(ddb_dsp_context_t *dsp, QWidget *parent = nullptr);
     ~PluginSettingsWidget();
 
 private:

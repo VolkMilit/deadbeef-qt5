@@ -9,7 +9,7 @@
 class CoverArtWrapper : public QObject {
     Q_OBJECT
 public:
-    static CoverArtWrapper *Instance(QObject *parent = 0);
+    static CoverArtWrapper *Instance(QObject *parent = nullptr);
     static void Destroy();
 
     void getCoverArt(const char *fname, const char *artist, const char *album);
@@ -20,7 +20,7 @@ public:
     int defaultWidthPixel;
 
 private:
-    CoverArtWrapper(QObject *parent = 0);
+    CoverArtWrapper(QObject *parent = nullptr);
     static CoverArtWrapper *instance;
 
     QFutureWatcher<QImage *> coverLoadWatcher;

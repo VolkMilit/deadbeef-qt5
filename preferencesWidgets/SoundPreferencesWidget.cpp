@@ -4,7 +4,7 @@
 #include "QtGui.h"
 
 static void enumSoundcardCallback(const char *name, const char *desc, void *userdata) {
-    SoundPreferencesWidget *dialog = (SoundPreferencesWidget *) (userdata);
+    SoundPreferencesWidget *dialog = static_cast<SoundPreferencesWidget *>(userdata);
     dialog->addDevice(name, desc);
 }
 

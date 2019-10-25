@@ -7,11 +7,11 @@ CoverArtCache *CoverArtCache::instance;
 void CoverArtCache::Destroy() {
     CoverArtWrapper::Instance()->Destroy();
     delete instance;
-    instance = NULL;
+    instance = nullptr;
 }
 
 CoverArtCache *CoverArtCache::Instance(QObject *parent) {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new CoverArtCache(parent);
     }
     return instance;

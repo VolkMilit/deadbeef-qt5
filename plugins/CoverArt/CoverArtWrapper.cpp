@@ -35,11 +35,11 @@ void CoverArtWrapper::Destroy() {
     if (COVERART)
         COVERART->reset(1);
     delete instance;
-    instance = NULL;
+    instance = nullptr;
 }
 
 CoverArtWrapper *CoverArtWrapper::Instance(QObject *parent) {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new CoverArtWrapper(parent);
     }
     return instance;
