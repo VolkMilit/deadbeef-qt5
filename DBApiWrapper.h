@@ -107,20 +107,20 @@ inline DBItemRef DBItemRef::playing()
 }
 
 // DBPltRef implementation
-DBPltRef::DBPltRef() : plt(deadbeef->plt_get_curr()) {}
+inline DBPltRef::DBPltRef() : plt(deadbeef->plt_get_curr()) {}
 
-DBPltRef::~DBPltRef()
+inline DBPltRef::~DBPltRef()
 {
     if (plt)
         deadbeef->plt_unref(plt);
 }
 
-int DBPltRef::itemCount() const
+inline int DBPltRef::itemCount() const
 {
     return deadbeef->plt_get_item_count(plt, PL_MAIN);
 }
 
-DBItemRef DBPltRef::at(int idx) const
+inline DBItemRef DBPltRef::at(int idx) const
 {
     return DBItemRef(deadbeef->plt_get_item_for_idx(plt, idx, PL_MAIN));
 }
