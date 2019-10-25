@@ -6,8 +6,10 @@
 
 #include "QtGui.h"
 
-class GuiUpdater : public QObject {
+class GuiUpdater : public QObject
+{
     Q_OBJECT
+
 public:
     static GuiUpdater *Instance();
     static void Destroy();
@@ -26,6 +28,7 @@ private:
     
 protected:
     void timerEvent(QTimerEvent *event);
+
 signals:
     void frameUpdate();
     void isPlaying(bool);

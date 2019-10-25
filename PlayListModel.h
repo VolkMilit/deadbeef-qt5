@@ -56,7 +56,7 @@ protected:
     QIcon playIcon;
     QIcon pauseIcon;
 
-public Q_SLOTS:
+public slots:
     void trackChanged(DB_playItem_t *from, DB_playItem_t *to);
     void playerPaused();
 };

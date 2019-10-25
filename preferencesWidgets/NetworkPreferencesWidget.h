@@ -7,10 +7,13 @@ namespace Ui {
     class NetworkPreferencesWidget;
 }
 
-class NetworkPreferencesWidget : public QWidget {
+class NetworkPreferencesWidget : public QWidget
+{
     Q_OBJECT
+
 public:
     NetworkPreferencesWidget(QWidget* parent = nullptr, Qt::WindowFlags f = nullptr);
+
 private:
     Ui::NetworkPreferencesWidget *ui;
 
@@ -20,7 +23,7 @@ private:
 protected:
     void changeEvent(QEvent *e);
     
-private Q_SLOTS:
+private slots:
     void enableProxy(bool);
     void saveProxyAddress();
     void saveProxyPassword();

@@ -46,10 +46,10 @@ private:
     void configureLayout();
     void configureConnections();
     
-private Q_SLOTS:
+private slots:
     void on_buttonBox_accepted();
 
-Q_SIGNALS:
+signals:
     void setTrayIconHidden(bool);
     void setTrayIconTheme(const QString &);
     void setCloseOnMinimize(bool);

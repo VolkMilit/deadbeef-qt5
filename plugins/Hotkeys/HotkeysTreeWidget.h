@@ -6,27 +6,34 @@
 #include <QTreeWidget>
 #include <QLineEdit>
 
-class HotkeysTreeWidget : public QTreeWidget {
+class HotkeysTreeWidget : public QTreeWidget
+{
     Q_OBJECT
 public:
-    HotkeysTreeWidget(QWidget *parent = 0);
+    HotkeysTreeWidget(QWidget *parent = nullptr);
     ~HotkeysTreeWidget();
+
     void loadHotkeys(DB_plugin_s **plugins);
     QHash<QString, QString> hotkeys;
+
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event);
-Q_SIGNALS:
+
+signals:
     void hotkeyDoubleClicked();
 };
 
-class HotkeyLineEdit : public QLineEdit {
+class HotkeyLineEdit : public QLineEdit
+{
     Q_OBJECT
 public:
-    HotkeyLineEdit(QWidget* parent = 0);
+    HotkeyLineEdit(QWidget* parent = nullptr);
     ~HotkeyLineEdit();
+
 protected:
     void mousePressEvent(QMouseEvent *event);
-Q_SIGNALS:
+
+signals:
     void clicked();
 };
 

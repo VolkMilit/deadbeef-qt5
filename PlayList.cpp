@@ -14,7 +14,10 @@
 
 #include <algorithm>
 
-PlayList::PlayList(QWidget *parent) : QTreeView(parent), playListModel(this) {
+PlayList::PlayList(QWidget *parent) :
+    QTreeView(parent),
+    playListModel(this)
+{
     setAutoFillBackground(false);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setDragEnabled(true);
@@ -53,18 +56,24 @@ PlayList::PlayList(QWidget *parent) : QTreeView(parent), playListModel(this) {
     installEventFilter(this);
 }
 
-bool PlayList::eventFilter(QObject *target, QEvent *event) {
-    if (event->type() == QEvent::KeyPress) {
+bool PlayList::eventFilter(QObject *target, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)
+    {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-        if ((keyEvent->key() == Qt::Key_Enter) || (keyEvent->key() == Qt::Key_Return)) {
+
+        if ((keyEvent->key() == Qt::Key_Enter) || (keyEvent->key() == Qt::Key_Return))
+        {
             emit enterRelease(currentIndex());
             return true;
         }
     }
+
     return QTreeView::eventFilter(target, event);
 }
 
-void PlayList::createConnections() {
+void PlayList::createConnections()
+{
     connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(trackDoubleClicked(QModelIndex)));
     connect(this, SIGNAL(enterRelease(QModelIndex)), SLOT(trackDoubleClicked(QModelIndex)));
 
@@ -76,7 +85,8 @@ void PlayList::createConnections() {
     connect(WRAPPER, SIGNAL(playlistChanged()), SLOT(refresh()));
 }
 
-void PlayList::refresh() {
+void PlayList::refresh()
+{
     setModel(nullptr);
     playListModel.sortCount = 0;
     setModel(&playListModel);
@@ -84,34 +94,40 @@ void PlayList::refresh() {
     goToLastSelection();
 }
 
-void PlayList::goToLastSelection() {
+void PlayList::goToLastSelection()
+{
     int cursor = DBAPI->plt_get_cursor(DBPltRef(), PL_MAIN);
+
     if (cursor < 0)
         restoreCursor();
     else
         setCurrentIndex(playListModel.index(cursor, 0, QModelIndex()));
 }
 
-void PlayList::restoreCursor() {
+void PlayList::restoreCursor()
+{
     int currentPlaylist = DBAPI->plt_get_curr_idx();
     int cursor = DBAPI->conf_get_int(QString("playlist.cursor.%1").arg(currentPlaylist).toUtf8().constData(), -1);
     setCurrentIndex(playListModel.index(cursor, 0, QModelIndex()));
 }
 
-void PlayList::storeCursor() {
+void PlayList::storeCursor()
+{
     DBPltRef plt;
     int cursor = DBAPI->plt_get_cursor(plt, PL_MAIN);
     DBAPI->conf_set_int(QString("playlist.cursor.%1").arg(DBAPI->plt_get_curr_idx()).toUtf8().constData(), cursor);
 }
 
-void PlayList::saveConfig() {
+void PlayList::saveConfig()
+{
     SETTINGS->setHeaderIsVisible(!header()->isHidden());
     SETTINGS->setHeaderState(header()->saveState());
     SETTINGS->setHeaderIsLocked(!header()->sectionsMovable() && header()->sectionResizeMode(1) == QHeaderView::Fixed);
     playListModel.saveConfig();
 }
 
-void PlayList::loadConfig() {
+void PlayList::loadConfig()
+{
     bool isVisible = SETTINGS->getHeaderIsVisible();
     bool isLocked = SETTINGS->getHeaderIsLocked();
     headerState = SETTINGS->getHeaderState();
@@ -122,50 +138,67 @@ void PlayList::loadConfig() {
     lockColumnsAction->setChecked(isLocked);
 }
 
-void PlayList::dragEnterEvent(QDragEnterEvent *event) {
-    if (event->mimeData()->hasUrls() || event->mimeData()->hasFormat("playlist/track")) {
+void PlayList::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls() || event->mimeData()->hasFormat("playlist/track"))
+    {
         event->setDropAction(Qt::MoveAction);
         event->accept();
-    } else {
+    }
+    else
+    {
         event->ignore();
     }
 }
 
-void PlayList::dropEvent(QDropEvent *event) {
-    if (event->mimeData()->hasUrls()) {
+void PlayList::dropEvent(QDropEvent *event)
+{
+    if (event->mimeData()->hasUrls())
+    {
         int count = pltItemCount();
         int row = indexAt(event->pos()).row();
         int before = (row >= 0) ? row - 1 : count - 1;
-        foreach (QUrl url, event->mimeData()->urls()) {
+
+        foreach (QUrl url, event->mimeData()->urls())
+        {
             playListModel.insertByURLAtPosition(url, before);
             before++;
         }
+
         event->setDropAction(Qt::CopyAction);
         event->accept();
-    } else if (event->mimeData()->hasFormat("playlist/track")) {
+    }
+    else if (event->mimeData()->hasFormat("playlist/track"))
+    {
         int row = indexAt(event->pos()).row();
         int count = pltItemCount();
         row = (row >= 0) ? row : count;
         QByteArray encodedData = event->mimeData()->data("playlist/track");
         QDataStream stream(&encodedData, QIODevice::ReadOnly);
         QHash<int,QString> newItems;
-        while (!stream.atEnd()) {
+
+        while (!stream.atEnd())
+        {
             int row;
             QString text;
             stream >> row >> text;
             newItems[row] = text;
         }
+
         QList<int> rows = newItems.keys();
         std::sort(rows.begin(), rows.end());
         playListModel.moveItems(rows, row);
         event->setDropAction(Qt::CopyAction);
         event->accept();
-    } else {
+    }
+    else
+    {
         event->ignore();
     }
 }
 
-void PlayList::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
+void PlayList::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
     if (selected == deselected)
         return;
 
@@ -174,11 +207,13 @@ void PlayList::selectionChanged(const QItemSelection &selected, const QItemSelec
     QTreeView::selectionChanged(selected, deselected);
 }
 
-void PlayList::trackDoubleClicked(QModelIndex index) {
+void PlayList::trackDoubleClicked(QModelIndex index)
+{
     DBApiWrapper::Instance()->playTrackByIndex(index.row());
 }
 
-void PlayList::createContextMenu() {
+void PlayList::createContextMenu()
+{
     setContextMenuPolicy(Qt::CustomContextMenu);
     //refresh metadata
     QAction *reloadMeta = new QAction(tr("Reload Metadata"), this);
@@ -235,7 +270,8 @@ void PlayList::createContextMenu() {
     connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 
-void PlayList::createHeaderContextMenu() {
+void PlayList::createHeaderContextMenu()
+{
     lockColumnsAction = new QAction(tr("Lock columns"), &headerContextMenu);
     lockColumnsAction->setCheckable(true);
     lockColumnsAction->setChecked(header()->sectionsMovable() && header()->sectionResizeMode(0) == QHeaderView::Fixed);
@@ -244,7 +280,8 @@ void PlayList::createHeaderContextMenu() {
     loadConfig();
     
     QMenu *columnsMenu = new QMenu(tr("Columns"), &headerContextMenu);
-    foreach (QString name, playListModel.columnNames.values()) {
+    foreach (QString name, playListModel.columnNames.values())
+    {
         QAction *action = new QAction(name, &headerContextMenu);
         action->setCheckable(true);
         //FIXME
@@ -260,13 +297,16 @@ void PlayList::createHeaderContextMenu() {
         connect(action, SIGNAL(toggled(bool)), SLOT(setColumnHidden(bool)));
         columnsMenu->addAction(action);
     }
+
     headerContextMenu.addMenu(columnsMenu);
     headerContextMenu.addAction(lockColumnsAction);
 }
 
-void PlayList::showContextMenu(QPoint point) {
+void PlayList::showContextMenu(QPoint point)
+{
     if (indexAt(point).row() < 0)
         return;
+
     QMenu menu(this);
     menu.addActions(actions());
     //move the menu a bit down
@@ -274,57 +314,68 @@ void PlayList::showContextMenu(QPoint point) {
     menu.exec(mapToGlobal(point)+QPoint(0,17*scaleFactor));
 }
 
-void PlayList::headerContextMenuRequested(QPoint pos) {
+void PlayList::headerContextMenuRequested(QPoint pos)
+{
     headerContextMenu.move(mapToGlobal(pos));
     headerContextMenu.show();
 }
 
-void PlayList::lockColumns(bool locked) {
+void PlayList::lockColumns(bool locked)
+{
     header()->setSectionResizeMode(locked ? QHeaderView::Fixed : QHeaderView::Interactive);
     header()->setSectionsMovable(!locked);
     headerState = header()->saveState();
 }
 
-void PlayList::onTrackChanged(DB_playItem_t *from, DB_playItem_t *to) {
+void PlayList::onTrackChanged(DB_playItem_t *from, DB_playItem_t *to)
+{
     int index = DBAPI->plt_get_item_idx(DBPltRef(), to, PL_MAIN);
     setCurrentIndex(playListModel.index(index, 0, QModelIndex()));
 
     playListModel.index(index, 0, QModelIndex());
 }
 
-void PlayList::reloadMetadata() {
+void PlayList::reloadMetadata()
+{
     playListModel.reloadMetadata(selectionModel()->selectedRows());
 }
 
-void PlayList::openFilesInFolder() {
+void PlayList::openFilesInFolder()
+{
     QModelIndexList tracks = selectionModel()->selectedRows();
     QStringList fileList;
     DBPltRef plt;
     DB_playItem_t *it;
     QModelIndex index;
-    foreach(index, tracks) {
+
+    foreach(index, tracks)
+    {
         it = plt.at(index.row());
         DBAPI->pl_lock();
         QString decoder_id(DBAPI->pl_find_meta(it, ":DECODER"));
         const char *filePath = DBAPI->pl_find_meta(it, ":URI");
         int match = DBAPI->is_local_file(filePath) && !decoder_id.isEmpty();
         DBAPI->pl_unlock();
-        if (match && !fileList.contains(QString(filePath))) {
+
+        if (match && !fileList.contains(QString(filePath)))
             fileList << filePath;
-        }
     }
+
     if (fileList.count() > 5)
     {
-        if (QMessageBox::question(this, "DeaDBeeF",
-        tr("More than 5 folders will be opened, proceed?"),
-        QMessageBox::Ok|QMessageBox::Cancel,
-        QMessageBox::Cancel) == QMessageBox::Cancel)
+        int ans = QMessageBox::question(this, "DeaDBeeF",
+                                        tr("More than 5 folders will be opened, proceed?"),
+                                        QMessageBox::Ok|QMessageBox::Cancel,
+                                        QMessageBox::Cancel);
+
+        if (ans == QMessageBox::Cancel)
             return;
     }
+
     QString filePath;
-    foreach(filePath, fileList) {
+
+    foreach(filePath, fileList)
         showInGraphicalShell(filePath);
-    }
 }
 
 void PlayList::showInGraphicalShell(const QString &pathIn)
@@ -347,7 +398,9 @@ void PlayList::showInGraphicalShell(const QString &pathIn)
     QStringList fileManagers = { "dolphin", "konqueror", "nautilus" };
     QString fileManager("");
     QString Exe;
-    foreach(Exe, fileManagers) {
+
+    foreach(Exe, fileManagers)
+    {
         fileManager = Exe;
         Exe.append(" -v >/dev/null 2>&1");
         int result = system(Exe.toUtf8().constData());
@@ -356,6 +409,7 @@ void PlayList::showInGraphicalShell(const QString &pathIn)
         else
             fileManager.clear();
     }
+
     if (!fileManager.isEmpty())
     {
         args << "--select" << pathIn;
@@ -365,45 +419,56 @@ void PlayList::showInGraphicalShell(const QString &pathIn)
 #endif
 }
 
-void PlayList::delSelectedTracks() {
+void PlayList::delSelectedTracks()
+{
     playListModel.deleteTracks(selectionModel()->selectedRows(), false);
 }
+
 /*
-void PlayList::cutSelectedItems() {
-    
+void PlayList::cutSelectedItems()
+{
 }
 
-void PlayList::copySelectedItems() {
-    
+void PlayList::copySelectedItems()
+{
 }
 
-void PlayList::pasteClipboardItems() {
-    
+void PlayList::pasteClipboardItems()
+{
 }
 */
-void PlayList::delSelectedFiles() {
+
+void PlayList::delSelectedFiles()
+{
     playListModel.deleteTracks(selectionModel()->selectedRows(), true);
 }
 
-void PlayList::viewTrackProps() {
+void PlayList::viewTrackProps()
+{
     playListModel.trackProps(selectionModel()->selectedRows());
 }
 
-void PlayList::clearPlayList() {
+void PlayList::clearPlayList()
+{
     playListModel.clearPlayList();
 }
 
-void PlayList::insertByURLAtPosition(const QUrl& url, int position) {
+void PlayList::insertByURLAtPosition(const QUrl& url, int position)
+{
     playListModel.insertByURLAtPosition(url, position);
 }
 
-void PlayList::toggleHeaderHidden() {
+void PlayList::toggleHeaderHidden()
+{
     setHeaderHidden(!isHeaderHidden());
 }
 
-void PlayList::setColumnHidden(bool hidden) {
-    if (QAction *action = qobject_cast<QAction *>(QObject::sender())) {
-        for (int i = 0; i < header()->count(); i++) {
+void PlayList::setColumnHidden(bool hidden)
+{
+    if (QAction *action = qobject_cast<QAction *>(QObject::sender()))
+    {
+        for (int i = 0; i < header()->count(); i++)
+        {
             if (playListModel.headerData(i, Qt::Horizontal, Qt::DisplayRole).toString() == action->text() ||
                 (playListModel.headerData(i, Qt::Horizontal, Qt::DisplayRole).toString() == "" && action->text() == tr("Status"))
             ) {
@@ -415,6 +480,7 @@ void PlayList::setColumnHidden(bool hidden) {
     }
 }
 
-void PlayList::saveHeaderState() {
+void PlayList::saveHeaderState()
+{
     headerState = header()->saveState();
 }

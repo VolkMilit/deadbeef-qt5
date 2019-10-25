@@ -6,7 +6,8 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-class CoverArtWrapper : public QObject {
+class CoverArtWrapper : public QObject
+{
     Q_OBJECT
 public:
     static CoverArtWrapper *Instance(QObject *parent = nullptr);

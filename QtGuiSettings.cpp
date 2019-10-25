@@ -28,10 +28,11 @@ const QString QtGuiSettings::HeaderState = QString("HeaderState");
 const QString QtGuiSettings::HeaderIsLocked = QString("HeaderIsLocked");
 const QString QtGuiSettings::HeaderIsVisible = QString("HeaderIsVisible");
 
-QtGuiSettings::QtGuiSettings() : settings(this) {
-}
+QtGuiSettings::QtGuiSettings() :
+    settings(this) {}
 
-void QtGuiSettings::Destroy() {
+void QtGuiSettings::Destroy()
+{
     delete instance;
 }
 

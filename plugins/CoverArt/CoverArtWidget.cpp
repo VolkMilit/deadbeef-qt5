@@ -13,7 +13,8 @@
 CoverArtWidget::CoverArtWidget(QWidget *parent):
         QDockWidget(parent),
         label(this),
-        updateCoverAction(tr("Update cover"), &label) {
+        updateCoverAction(tr("Update cover"), &label)
+{
     setObjectName("CoverArt Widget");
     
     QWidget *thisWidget = new QWidget(this);
@@ -40,16 +41,19 @@ CoverArtWidget::CoverArtWidget(QWidget *parent):
     CACHE->getDefaultCoverArt();
 }
 
-CoverArtWidget::~CoverArtWidget() {
+CoverArtWidget::~CoverArtWidget()
+{
     CACHE->Destroy();
 }
 
-void CoverArtWidget::trackChanged(DB_playItem_t *, DB_playItem_t *to) {
+void CoverArtWidget::trackChanged(DB_playItem_t *, DB_playItem_t *to)
+{
     if (isVisible())
         updateCover(to);
 }
 
-void CoverArtWidget::setCover(const QImage *aCover) {
+void CoverArtWidget::setCover(const QImage *aCover)
+{
     label.setBorder((((aCover->pixel(0, 0) & 0xFF000000) >> 24) > 0x40) ? this->devicePixelRatioF() : 0, QBrush(Qt::lightGray));
     label.setAlignment(1, -1);
     //label.setPixmap(QPixmap::fromImage(*aCover));
@@ -64,22 +68,28 @@ void CoverArtWidget::setCover(const QImage *aCover) {
     //setMaximumHeight(aCover.height() + 25);
 }
 
-void CoverArtWidget::reloadCover() {
+void CoverArtWidget::reloadCover()
+{
     DB_playItem_t *track = DBAPI->streamer_get_playing_track();
+
     if (!track)
         return;
+
     const char *album = DBAPI->pl_find_meta(track, "album");
     const char *artist = DBAPI->pl_find_meta(track, "artist");
-    if (!album || !*album) {
+
+    if (!album || !*album)
         album = DBAPI->pl_find_meta(track, "title");
-    }
+
     CACHE->removeCoverArt(artist, album);
     CACHE->getCoverArt(DBAPI->pl_find_meta(track, ":URI"), artist, album);
+
     if (track)
         DBAPI->pl_item_unref(track);
 }
 
-void CoverArtWidget::updateCover(DB_playItem_t *track) {
+void CoverArtWidget::updateCover(DB_playItem_t *track)
+{
     if (!track)
         track = DBAPI->streamer_get_playing_track();
     else
@@ -90,9 +100,9 @@ void CoverArtWidget::updateCover(DB_playItem_t *track) {
 
     const char *album = DBAPI->pl_find_meta(track, "album");
     const char *artist = DBAPI->pl_find_meta(track, "artist");
-    if (!album || !*album) {
+
+    if (!album || !*album)
         album = DBAPI->pl_find_meta(track, "title");
-    }
 
     CACHE->getCoverArt(DBAPI->pl_find_meta(track, ":URI"), artist, album);
 
@@ -100,12 +110,14 @@ void CoverArtWidget::updateCover(DB_playItem_t *track) {
         DBAPI->pl_item_unref(track);
 }
 
-void CoverArtWidget::closeEvent(QCloseEvent *event) {
+void CoverArtWidget::closeEvent(QCloseEvent *event)
+{
     emit onCloseEvent();
     QDockWidget::closeEvent(event);
 }
 
-void CoverArtWidget::showEvent(QShowEvent *event) {
+void CoverArtWidget::showEvent(QShowEvent *event)
+{
     updateCover();
     QDockWidget::showEvent(event);
 }

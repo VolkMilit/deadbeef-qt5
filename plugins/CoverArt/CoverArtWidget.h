@@ -7,7 +7,8 @@
 #include "DBApiWrapper.h"
 #include <QAction>
 
-class CoverArtWidget : public QDockWidget {
+class CoverArtWidget : public QDockWidget
+{
     Q_OBJECT
 
 public:
@@ -24,12 +25,12 @@ protected:
     void closeEvent(QCloseEvent *event);
     void showEvent(QShowEvent *event);
     
-private Q_SLOTS:
+private slots:
     void trackChanged(DB_playItem_t *, DB_playItem_t *);
     void setCover(const QImage *);
     void reloadCover();
 
-Q_SIGNALS:
+signals:
     void onCloseEvent();
     
 };

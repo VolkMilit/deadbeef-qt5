@@ -18,15 +18,16 @@ extern ddb_dsp_context_t *current_dsp_context;
 extern ddb_dsp_context_t *dsp_chain;
 
 PluginSettingsWidget::PluginSettingsWidget(ddb_dialog_t *conf, QWidget *parent):
-        QGroupBox(parent){
+        QGroupBox(parent)
+{
     setTitle(tr("Settings"));
     isDsp = false;
     configureWidgets(conf);
 }
 
 PluginSettingsWidget::PluginSettingsWidget(ddb_dsp_context_t *dsp, QWidget *parent):
-        QGroupBox(parent){
-            
+        QGroupBox(parent)
+{
     ddb_dialog_t conf;
     current_dsp_context = dsp;
     conf.title = dsp->plugin->plugin.name;
@@ -37,23 +38,30 @@ PluginSettingsWidget::PluginSettingsWidget(ddb_dsp_context_t *dsp, QWidget *pare
     configureWidgets(&conf);
 }
 
-PluginSettingsWidget::~PluginSettingsWidget() {
+PluginSettingsWidget::~PluginSettingsWidget()
+{
     current_dsp_context = NULL;
+
     if (dsp_chain)
         DBAPI->streamer_set_dsp_chain(dsp_chain);
+
     DBAPI->sendmessage(DB_EV_DSPCHAINCHANGED, 0, 0, 0);
 }
 
-void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog) {
-    
+void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog)
+{
     layout = new QFormLayout(this);
     bool HLayout = false;
     
     char token[MAX_TOKEN];
     const char *script = settingsDialog->layout;
+
     //qDebug() << script;
-    while ((script = gettoken(script, token))) {
-        if (strcmp(token, "property")) {
+
+    while ((script = gettoken(script, token)))
+    {
+        if (strcmp(token, "property"))
+        {
             qDebug() << "invalid token while loading plugin " << settingsDialog->title << " config dialog: " << token << " at line " << parser_line;
             break;
         }
@@ -69,7 +77,8 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog) {
             break;
         
         int spacing = 0;
-        if (!strncmp (type, "hbox[", 5) || !strncmp (type, "vbox[", 5)) {
+        if (!strncmp (type, "hbox[", 5) || !strncmp (type, "vbox[", 5))
+        {
             if (type[0] == 'h')
             {
                 if (!HLayout && layout->isEmpty())
@@ -82,15 +91,20 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog) {
             
             char param[MAX_TOKEN];
             int height;
-            for (;;) {
+
+            for (;;)
+            {
                 script = gettoken_warn_eof (script, param);
-                if (!script) {
+
+                if (!script)
+                    break;
+
+                if (!strcmp (param, ";"))
+                {
                     break;
                 }
-                if (!strcmp (param, ";")) {
-                    break;
-                }
-                else if (!strncmp (param, "spacing=", 8)) {
+                else if (!strncmp (param, "spacing=", 8))
+                {
                     if (HLayout)
                     {
                         spacing = atoi (param+8);
@@ -98,12 +112,14 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog) {
                         //layout->setSpacing(spacing+15);
                     }
                 }
-                else if (!strncmp (param, "height=", 7)) {
+                else if (!strncmp (param, "height=", 7))
+                {
                     height = atoi (param+7);
                     QWidget *parnetDlg = this->parentWidget();
                     parnetDlg->resize(parnetDlg->width(), height+120);
                 }
             }
+
             /*
             char semicolon[MAX_TOKEN];
             while ((script = gettoken_warn_eof(script, semicolon)))
@@ -117,20 +133,24 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog) {
         //int vertical = 0;
         char key[MAX_TOKEN];
         const char *skiptokens[] = { "vert", NULL };
-        for (;;) {
+
+        for (;;)
+        {
             script = gettoken_warn_eof(script, key);
             if (!strcmp (key, "vert")) {
                 //vertical = 1;
             }
+
             int i = 0;
-            for (i = 0; skiptokens[i]; i++) {
-                if (!strcmp (key, skiptokens[i])) {
-                    break;  
-                }
+
+            for (int j = 0; skiptokens[i]; j++)
+            {
+                if (!strcmp (key, skiptokens[j]))
+                    break;
             }
-            if (!skiptokens[i]) {
+
+            if (!skiptokens[i])
                 break;
-            }
         }
         
         if (!script)
@@ -144,67 +164,92 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog) {
         char value[1000];
         settingsDialog->get_param(key, value, sizeof (value), def);
 
-        if (!strcmp(type, "entry") || !strcmp(type, "password")) {
+        if (!strcmp(type, "entry") || !strcmp(type, "password"))
+        {
             label = new QLabel(tr(labeltext), this);
             prop = new QLineEdit(value, this);
             QLineEdit *lineEdit = qobject_cast<QLineEdit *>(prop);
+
             if (!strcmp(type, "password"))
                 lineEdit->setEchoMode(QLineEdit::Password);
+
             addEntryWithLabel(layout, label, prop, HLayout);
-            connect(lineEdit, SIGNAL(editingFinished()), SLOT(saveProperty()));
-        } else if (!strcmp(type, "checkbox")) {
+            connect(lineEdit, &QLineEdit::editingFinished, this, &PluginSettingsWidget::saveProperty);
+        }
+        else if (!strcmp(type, "checkbox"))
+        {
             prop = new QCheckBox(tr(labeltext), this);
             QCheckBox *checkBox = qobject_cast<QCheckBox *>(prop);
             int val = atoi(value);
             checkBox->setChecked(val);
             addEntry(layout, prop, HLayout);
-            connect(checkBox, SIGNAL(toggled(bool)), SLOT(saveProperty()));
-        } else if (!strcmp(type, "file")) {
+            connect(checkBox, &QCheckBox::toggled, this, &PluginSettingsWidget::saveProperty);
+        }
+        else if (!strcmp(type, "file"))
+        {
             label = new QLabel(tr(labeltext), this);
             //label->setWordWrap(true);
             //label->setMaximumWidth(400);
             prop = new QFileRequester(QString(value), this);
             addEntryWithLabel(layout, label, prop, HLayout);
-            connect(prop, SIGNAL(changed()), SLOT(saveProperty()));
-            
-        } else if (!strncmp(type, "select[", 7)) {
+            connect(prop, QOverload<void>(&QFileRequester::changed), this, &PluginSettingsWidget::saveProperty);
+        }
+        else if (!strncmp(type, "select[", 7))
+        {
             int n;
+
             if (1 != sscanf(type+6, "[%d]", &n))
                 break;
+
             label = new QLabel(tr(labeltext), this);
             prop = new QComboBox(this);
             QComboBox *comboBox = qobject_cast<QComboBox *>(prop);
-            for (int i = 0; i < n; i++) {
+
+            for (int i = 0; i < n; i++)
+            {
                 char entry[MAX_TOKEN];
                 script = gettoken_warn_eof(script, entry);
+
                 if (!script)
                     break;
+
                 comboBox->addItem(entry);
             }
+
             if (!script)
                 break;
+
             comboBox->setCurrentIndex(atoi(value));
             addEntryWithLabel(layout, label, prop, HLayout);
             connect(comboBox, SIGNAL(currentIndexChanged(int)), SLOT(saveProperty()));
-        } else if (!strncmp(type, "hscale[", 7) || !strncmp(type, "vscale[", 7) || !strncmp(type, "spinbtn[", 8)) {
+        }
+        else if (!strncmp(type, "hscale[", 7) || !strncmp(type, "vscale[", 7) || !strncmp(type, "spinbtn[", 8))
+        {
             float min, max, step;
             const char *args;
+
             if (type[0] == 's')
                 args = type + 7;
             else
                 args = type + 6;
+
             if (3 != sscanf(args, "[%f,%f,%f]", &min, &max, &step))
                 break;
+
             //int invert = 0;
-            if (min >= max) {
+            if (min >= max)
+            {
                 float tmp = min;
                 min = max;
                 max = tmp;
                 //invert = 1;
             }
+
             if (step <= 0)
                 step = 1;
-            if (type[0] == 's') {
+
+            if (type[0] == 's')
+            {
                 prop = new QDoubleSpinBox(this);
                 QDoubleSpinBox *spinBox = qobject_cast<QDoubleSpinBox *>(prop);
                 spinBox->setMaximum(max);
@@ -212,7 +257,9 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog) {
                 spinBox->setSingleStep(step);
                 spinBox->setValue(atof(value));
                 connect(spinBox, SIGNAL(editingFinished()), SLOT(saveProperty()));
-            } else {
+            }
+            else
+            {
                 prop = type[0] == 'h' ? new QDoubleSlider(Qt::Horizontal, 1/step, this) : new QDoubleSlider(Qt::Vertical, 1/step, this);
                 QDoubleSlider *slider = qobject_cast<QDoubleSlider *>(prop);
                 //slider->setInvertedAppearance(invert);
@@ -224,6 +271,7 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog) {
                 slider->setValue(atof(value));
                 connect(slider, SIGNAL(sliderReleased()), SLOT(saveProperty()));
             }
+
             label = new QLabel(tr(labeltext), this);
             if (HLayout)
                 label->setMinimumWidth(50+spacing);
@@ -238,11 +286,13 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog) {
         if (!script)
             break;
 
-        if (strcmp (token, ";")) {
+        if (strcmp (token, ";"))
+        {
             qDebug() << "expected `;' while loading plugin " << settingsDialog->title << " config dialog: "<< token << " at line " << parser_line;
             break;
         }
     }
+
     setLayout(layout);
 }
 
@@ -276,14 +326,18 @@ void PluginSettingsWidget::addEntryWithLabel(QLayout *layout, QLabel *label, QWi
         formLayout->addRow(label, prop);
     }
 }
-void PluginSettingsWidget::killDialog() {
+void PluginSettingsWidget::killDialog()
+{
     saveProperty();
     qobject_cast<QDialog *>(this->parentWidget())->accept();
 }
 
-void PluginSettingsWidget::saveProperty() {
-    if (QWidget *widget = qobject_cast<QWidget *>(QObject::sender())) {
+void PluginSettingsWidget::saveProperty()
+{
+    if (QWidget *widget = qobject_cast<QWidget *>(QObject::sender()))
+    {
         QString val = "";
+
         if (QLineEdit *lineEdit = qobject_cast<QLineEdit *>(widget))
             val = lineEdit->text();
         else if (QCheckBox *checkBox = qobject_cast<QCheckBox *>(widget))

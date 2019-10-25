@@ -52,7 +52,7 @@ protected:
 
     PlayListModel playListModel;
 
-public Q_SLOTS:
+public slots:
     void reloadMetadata();
     void delSelectedTracks();
     void delSelectedFiles();
@@ -63,7 +63,7 @@ public Q_SLOTS:
     //void pasteClipboardItems();
     void refresh();
 
-private Q_SLOTS:
+private slots:
     void trackDoubleClicked(QModelIndex index);
     void headerContextMenuRequested(QPoint);
     void lockColumns(bool);

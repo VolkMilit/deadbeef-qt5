@@ -6,7 +6,8 @@
 #include <QMouseEvent>
 #include <QPainter>
 
-class VolumeSlider : public QSlider {
+class VolumeSlider : public QSlider
+{
     Q_OBJECT
 
 public:

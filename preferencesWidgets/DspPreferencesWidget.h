@@ -12,32 +12,30 @@ namespace Ui {
     class DspPreferencesWidget;
 }
 
-class DspPreferencesWidget : public QWidget {
+class DspPreferencesWidget : public QWidget
+{
     Q_OBJECT
+
 public:
     DspPreferencesWidget(QWidget* parent = nullptr, Qt::WindowFlags f = nullptr);
     ~DspPreferencesWidget();
+
 private:
     Ui::DspPreferencesWidget *ui;
-
-    void loadSettings();
-    void createConnections();
     
     QStandardItemModel *model;
-    
+    QDir dspPresetDir;
     ddb_dsp_context_t *dsp_clone(ddb_dsp_context_t *from);
     ddb_dsp_context_t *chain;
+
     int swap_items(int idx);
-    void fill_dsp_chain(QStandardItemModel *mdl);
-    
-    QDir dspPresetDir;
-    void fillPresets();
-    
+    void loadSettings();
+    void createConnections();
+    void fill_dsp_chain(QStandardItemModel *mdl);    
+    void fillPresets();    
     void update_streamer();
     
-protected:
-    
-private Q_SLOTS:
+private slots:
     void openDspConf();
     void addDsp();
     void rmDsp();

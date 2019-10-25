@@ -21,7 +21,8 @@
 
 #include <deadbeef/deadbeef.h>
 
-typedef struct DB_hotkeys_plugin_s {
+typedef struct DB_hotkeys_plugin_s
+{
     DB_misc_t misc;
     const char *(*get_name_for_keycode) (int keycode);
     void (*reset) (void);

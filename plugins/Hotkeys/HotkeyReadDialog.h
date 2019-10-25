@@ -5,19 +5,24 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-class HotkeyReadDialog : public QDialog {
+class HotkeyReadDialog : public QDialog
+{
     Q_OBJECT
+
 public:
-    HotkeyReadDialog(const QString &actionTitle, QWidget *parent = 0);
+    HotkeyReadDialog(const QString &actionTitle, QWidget *parent = nullptr);
     ~HotkeyReadDialog();
+
 private:
     QVBoxLayout vbox;
     QLabel message;
     QLabel hotkey;
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
-Q_SIGNALS:
+
+signals:
     void hotkeyChanged(const QString &);
 };
 

@@ -6,17 +6,22 @@
 
 #define DRAG_DELAY 5
 
-class TabBar: public QTabBar {
+class TabBar: public QTabBar
+{
     Q_OBJECT
+
 public:
-    enum TabBarPosition {
+    enum TabBarPosition
+    {
         Top = 0,
         Bottom = 1,
         Left = 2,
         Right = 3,
     };
-    TabBar(QWidget *parent = 0);
+
+    TabBar(QWidget *parent = nullptr);
     ~TabBar();
+
     int selectTab(const QPoint &position) const;
     void setShape(Shape shape);
     
@@ -45,11 +50,10 @@ protected:
     void wheelEvent(QWheelEvent *event);
     QSize tabSizeHint(int index) const;
 
-public Q_SLOTS:
+public slots:
     void newPlaylist();
-    
 
-private Q_SLOTS:
+private slots:
     void moveTab(int, int);
     void showTabContextMenu(int, QPoint);
     void renamePlaylist();
@@ -60,7 +64,7 @@ private Q_SLOTS:
     void setRightPosition();
     void setLeftPosition();
 
-Q_SIGNALS:
+signals:
     void tabContextMenuRequested(int index, const QPoint &globalPos);
     void emptyAreaContextMenuRequested(const QPoint &globalPos);
 

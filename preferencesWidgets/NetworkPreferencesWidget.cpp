@@ -12,31 +12,32 @@ NetworkPreferencesWidget::NetworkPreferencesWidget(QWidget* parent, Qt::WindowFl
     createConnections();
 }
 
-void NetworkPreferencesWidget::loadSettings() {
+void NetworkPreferencesWidget::loadSettings()
+{
     ui->enableProxyCheckBox->setChecked(DBAPI->conf_get_int("network.proxy", 0));
+
     DBAPI->conf_lock();
+
     ui->proxyAddressLineEdit->setText(QString::fromUtf8(DBAPI->conf_get_str_fast("network.proxy.address", "")));
     ui->proxyPortSpinBox->setValue(QString::fromUtf8(DBAPI->conf_get_str_fast("network.proxy.port", "8080")).toInt());
+
     const char *type = DBAPI->conf_get_str_fast("network.proxy.type", "HTTP");
+
     DBAPI->conf_unlock();
-    if (!strcasecmp(type, "HTTP")) {
+
+    if (!QString::compare(type, "HTTP", Qt::CaseInsensitive))
         ui->proxyTypeComboBox->setCurrentIndex(0);
-    }
-    else if (!strcasecmp(type, "HTTP_1_0")) {
+    else if (!QString::compare(type, "HTTP_1_0", Qt::CaseInsensitive))
         ui->proxyTypeComboBox->setCurrentIndex(1);
-    }
-    else if (!strcasecmp(type, "SOCKS4")) {
+    else if (!QString::compare(type, "SOCKS4", Qt::CaseInsensitive))
         ui->proxyTypeComboBox->setCurrentIndex(2);
-    }
-    else if (!strcasecmp(type, "SOCKS5")) {
+    else if (!QString::compare(type, "SOCKS5", Qt::CaseInsensitive))
         ui->proxyTypeComboBox->setCurrentIndex(3);
-    }
-    else if (!strcasecmp(type, "SOCKS4A")) {
+    else if (!QString::compare(type, "SOCKS4A", Qt::CaseInsensitive))
         ui->proxyTypeComboBox->setCurrentIndex(4);
-    }
-    else if (!strcasecmp(type, "SOCKS5_HOSTNAME")) {
+    else if (!QString::compare(type, "SOCKS5_HOSTNAME", Qt::CaseInsensitive))
         ui->proxyTypeComboBox->setCurrentIndex(5);
-    }
+
     ui->proxyUsernameLineEdit->setText(QString::fromUtf8(DBAPI->conf_get_str_fast("network.proxy.username", "")));
     ui->proxyPasswordLineEdit->setText(QString::fromUtf8(DBAPI->conf_get_str_fast("network.proxy.password", "")));
     
@@ -54,7 +55,8 @@ void NetworkPreferencesWidget::loadSettings() {
     ui->proxyUsernameLineEdit->setVisible(enabled);
 }
 
-void NetworkPreferencesWidget::createConnections() {
+void NetworkPreferencesWidget::createConnections()
+{
     connect(ui->enableProxyCheckBox, SIGNAL(toggled(bool)), SLOT(enableProxy(bool)));
     connect(ui->proxyAddressLineEdit, SIGNAL(editingFinished()), SLOT(saveProxyAddress()));
     connect(ui->proxyPasswordLineEdit, SIGNAL(editingFinished()), SLOT(saveProxyPassword()));
@@ -63,7 +65,8 @@ void NetworkPreferencesWidget::createConnections() {
     connect(ui->proxyUsernameLineEdit, SIGNAL(editingFinished()), SLOT(saveProxyUsername()));
 }
 
-void NetworkPreferencesWidget::enableProxy(bool enabled) {
+void NetworkPreferencesWidget::enableProxy(bool enabled)
+{
     DBAPI->conf_set_int("network.proxy", enabled);
     ui->proxyAddressLineEdit->setVisible(enabled);
     ui->proxyPasswordLabel->setVisible(enabled);
@@ -77,20 +80,25 @@ void NetworkPreferencesWidget::enableProxy(bool enabled) {
     ui->proxyUsernameLineEdit->setVisible(enabled);
 }
 
-void NetworkPreferencesWidget::saveProxyAddress() {
+void NetworkPreferencesWidget::saveProxyAddress()
+{
     DBAPI->conf_set_str("network.proxy.address", ui->proxyAddressLineEdit->text().toUtf8().constData());
 }
 
-void NetworkPreferencesWidget::saveProxyPassword() {
+void NetworkPreferencesWidget::saveProxyPassword()
+{
     DBAPI->conf_set_str("network.proxy.password", ui->proxyPasswordLineEdit->text().toUtf8().constData());
 }
 
-void NetworkPreferencesWidget::saveProxyPort() {
+void NetworkPreferencesWidget::saveProxyPort()
+{
     DBAPI->conf_set_int("network.proxy.port", ui->proxyPortSpinBox->value());
 }
 
-void NetworkPreferencesWidget::saveProxyType(int index) {
-    switch (index) {
+void NetworkPreferencesWidget::saveProxyType(int index)
+{
+    switch (index)
+    {
         case 0:
             DBAPI->conf_set_str("network.proxy.type", "HTTP");
             break;
@@ -115,13 +123,17 @@ void NetworkPreferencesWidget::saveProxyType(int index) {
     }
 }
 
-void NetworkPreferencesWidget::saveProxyUsername() {
+void NetworkPreferencesWidget::saveProxyUsername()
+{
     DBAPI->conf_set_str("network.proxy.username", ui->proxyUsernameLineEdit->text().toUtf8().constData());
 }
 
-void NetworkPreferencesWidget::changeEvent(QEvent *e) {
+void NetworkPreferencesWidget::changeEvent(QEvent *e)
+{
     QWidget::changeEvent(e);
-    switch (e->type()) {
+
+    switch (e->type())
+    {
         case QEvent::LanguageChange:
             ui->retranslateUi(this);
             break;

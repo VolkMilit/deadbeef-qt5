@@ -26,75 +26,101 @@
 // quoted strings and extra special chars
 int parser_line;
 
-void parser_init(void) {
+void parser_init(void)
+{
     parser_line = 1;
 }
 
-const char *skipws(const char *p) {
-    while (*p <= ' ' && *p) {
-        if (*p == '\n') {
+const char *skipws(const char *p)
+{
+    while (*p <= ' ' && *p)
+    {
+        if (*p == '\n')
             parser_line++;
-        }
+
         p++;
     }
-    if (!*p) {
+
+    if (!*p)
+    {
         return NULL;
     }
+
     return p;
 }
 
-const char *gettoken(const char *p, char *tok) {
+const char *gettoken(const char *p, char *tok)
+{
     const char *c;
     assert (p);
     assert (tok);
     int n = MAX_TOKEN-1;
     char specialchars[] = "{}();";
-    if (!(p = skipws(p))) {
+
+    if (!(p = skipws(p)))
+    {
         return NULL;
     }
-    if (*p == '"') {
+
+    if (*p == '"')
+    {
         p++;
         c = p;
-        while (n > 0 && *c && *c != '"') {
-            if (*c == '\n') {
+
+        while (n > 0 && *c && *c != '"')
+        {
+            if (*c == '\n')
                 parser_line++;
-            }
+
             *tok++ = *c++;
             n--;
         }
-        if (*c) {
+
+        if (*c)
             c++;
-        }
+
         *tok = 0;
         return c;
     }
-    if (strchr(specialchars, *p)) {
+
+    if (strchr(specialchars, *p))
+    {
         *tok = *p;
         tok[1] = 0;
         return p+1;
     }
+
     c = p;
-    while (n > 0 && *c > ' ' && !strchr(specialchars, *c)) {
+
+    while (n > 0 && *c > ' ' && !strchr(specialchars, *c))
+    {
         *tok++ = *c++;
         n--;
     }
+
     *tok = 0;
     return c;
 }
 
-const char *gettoken_warn_eof(const char *p, char *tok) {
+const char *gettoken_warn_eof(const char *p, char *tok)
+{
     p = gettoken(p, tok);
-    if (!p) {
+
+    if (!p)
         fprintf(stderr, "parser: unexpected eof at line %d", parser_line);
-    }
+
     return p;
 }
 
-const char *gettoken_err_eof(const char *p, char *tok) {
+const char *gettoken_err_eof(const char *p, char *tok)
+{
     p = gettoken(p, tok);
-    if (!p) {
+
+    if (!p)
+    {
         fprintf(stderr, "parser: unexpected eof at line %d", parser_line);
         exit (-1);
     }
+
     return p;
 }

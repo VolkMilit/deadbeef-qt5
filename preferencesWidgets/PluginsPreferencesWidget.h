@@ -8,11 +8,14 @@
 #include "QtGui.h"
 #include "PluginSettingsWidget.h"
 
-class CopyrightDialog : public QDialog {
+class CopyrightDialog : public QDialog
+{
   Q_OBJECT
+
 public:
     CopyrightDialog(QWidget *parent = 0, Qt::WindowFlags f = nullptr);
     void setText(const QString &);
+
 private:
     QVBoxLayout vbox;
     QTextEdit textEdit;
@@ -22,8 +25,10 @@ namespace Ui {
     class PluginsPreferencesWidget;
 }
 
-class PluginsPreferencesWidget : public QWidget {
+class PluginsPreferencesWidget : public QWidget
+{
     Q_OBJECT
+
 public:
     PluginsPreferencesWidget(QWidget *parent = 0, Qt::WindowFlags f = nullptr);
     ~PluginsPreferencesWidget();
@@ -45,7 +50,7 @@ private:
 protected:
     void changeEvent(QEvent *e);
 
-private Q_SLOTS:
+private slots:
     void loadPluginInfo(int);
     void openUrl();
     void manageBlacklist();

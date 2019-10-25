@@ -56,39 +56,52 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
     
     metaDataCustomKeys.clear();
     QHash<QString, QString> metaDataStd;
-    foreach (QString v,metaDataKeys){
+
+    foreach (QString v,metaDataKeys)
         metaDataStd[v] = QString("");
-    }
+
     QHash<QString, QString> metaDataCustom;
     
     QStringList propsCustomKeys;
     QHash<QString, QString> propsStd;
-    foreach (QString v,propsKeys){
+
+    foreach (QString v,propsKeys)
         propsStd[v] = QString("");
-    }
+
     QHash<QString, QString> propsCustom;
     
-    while (meta) {
+    while (meta)
+    {
         DB_metaInfo_t *next = meta->next;
-        if (meta->key[0] != ':' && meta->key[0] != '!' && meta->key[0] != '_') {
+
+        if (meta->key[0] != ':' && meta->key[0] != '!' && meta->key[0] != '_')
+        {
             if (metaDataStd.contains(meta->key))
+            {
                 metaDataStd[meta->key] = meta->value;
+            }
             else
             {
                 metaDataCustom[meta->key] = meta->value;
                 metaDataCustomKeys << meta->key;
-            }
-        } else if (meta->key[0] == ':') {
+            }    
+        }
+        else if (meta->key[0] == ':')
+        {
             if (propsStd.contains(meta->key))
+            {
                 propsStd[meta->key] = meta->value;
+            }
             else
             {
                 propsCustom[meta->key] = meta->value;
                 propsCustomKeys << meta->key;
             }
         }
+
         meta = next;
     }
+
     DBAPI->pl_unlock();
     int j;
     char fPath[PATH_MAX];
@@ -101,6 +114,7 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
     modelPropsHeader->setHorizontalHeaderItem(0, new QStandardItem(tr("Key")));
     modelPropsHeader->setHorizontalHeaderItem(1, new QStandardItem(tr("Value")));
     tableViewProps->setModel(modelPropsHeader);
+
     //write properties to table
     for (int i=0; i<propsKeys.count(); i++)
     {
@@ -111,6 +125,7 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
         modelPropsHeader->setItem(i,0,keyname);
         modelPropsHeader->setItem(i,1,value);
     }
+
     j = propsKeys.count();
     for (int i=0; i<propsCustomKeys.count(); i++)
     {
@@ -125,6 +140,7 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
         modelPropsHeader->setItem(i+j,0,keyname);
         modelPropsHeader->setItem(i+j,1,value);
     }
+
     //tableViewProps->resizeColumnsToContents();
     tableViewProps->setShowGrid(false);
     tableViewProps->setColumnWidth(1, 200);
@@ -135,13 +151,13 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
     tableViewProps->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableViewProps->setSelectionMode(QAbstractItemView::SingleSelection);
     
-    
     QTableView *tableViewMeta = ui->tableViewMeta;
     modelMetaHeader = new QStandardItemModel(0,2,this);
     modelMetaHeader->setHorizontalHeaderItem(0, new QStandardItem(QLatin1String("")));
     modelMetaHeader->setHorizontalHeaderItem(1, new QStandardItem(tr("Key")));
     modelMetaHeader->setHorizontalHeaderItem(2, new QStandardItem(tr("Value")));
     tableViewMeta->setModel(modelMetaHeader);
+
     //write metadata to table
     for (int i=0; i<metaDataKeys.count(); i++)
     {
@@ -155,7 +171,9 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
         modelMetaHeader->setItem(i,1,keyname);
         modelMetaHeader->setItem(i,2,value);
     }
+
     j = metaDataKeys.count();
+
     for (int i=0; i<metaDataCustomKeys.count(); i++)
     {
         QStandardItem *key = new QStandardItem(metaDataCustomKeys.at(i));
@@ -169,6 +187,7 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
         keyname->setFont(keyfont);
         QString valueStr = QString(metaDataCustom[metaDataCustomKeys.at(i)]);
         QStandardItem *value;
+
         if (valueStr.contains(QChar(10)))
         {
             value = new QStandardItem(valueStr.split(QChar(10))[0] + QString("(...)"));
@@ -176,7 +195,10 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
             value->setFlags(value->flags()^Qt::ItemIsEditable);
         }
         else
+        {
             value = new QStandardItem(valueStr);
+        }
+
         //value->setFlags(value->flags()^Qt::ItemIsEditable);
         modelMetaHeader->setItem(i+j,0,key);
         modelMetaHeader->setItem(i+j,1,keyname);
@@ -211,18 +233,25 @@ void MetadataDialog::on_btnClose_clicked()
                 tr("Track metadata modified, do you want to save?"),
                 QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel,
                 QMessageBox::Cancel);
+
         if (result == QMessageBox::Cancel)
+        {
             return;
+        }
         else if (result == QMessageBox::Yes)
         {
             on_btnApply_clicked();
             this->accept();
         }
         else
+        {
             this->reject();
+        }
     }
     else
+    {
         this->reject();
+    }
 }
 
 void MetadataDialog::on_btnApply_clicked()
@@ -233,6 +262,7 @@ void MetadataDialog::on_btnApply_clicked()
     metaUpdateProgress->setWindowModality(Qt::WindowModal);
     //metaUpdateProgress->setAttribute(Qt::WA_DeleteOnClose);
     metaUpdateProgress->setWindowFlags(Qt::Dialog|Qt::WindowTitleHint|Qt::CustomizeWindowHint);
+
     connect(&metadataWatcher, &QFutureWatcher<void>::finished, [this](){
         if (metaUpdateProgress)
         {
@@ -241,6 +271,7 @@ void MetadataDialog::on_btnApply_clicked()
             metaUpdateProgress = nullptr;
         }
     });
+
     metadataWatcher.setFuture(QtConcurrent::run(this, &MetadataDialog::writeMetadata));
     metaUpdateProgress->show();
 }
@@ -257,11 +288,13 @@ void MetadataDialog::writeMetadata()
     {
         QString key = modelMetaHeader->item(i, 0)->text();
         QStandardItem *valueItem = modelMetaHeader->item(i, 2);
-        QString value("");
+        QString value = "";
+
         if (valueItem->data().isValid() && static_cast<QMetaType::Type>(valueItem->data().type()) == QMetaType::QString)
             value = valueItem->data().toString();
         else
             value = modelMetaHeader->item(i, 2)->text();
+
         if (!value.isEmpty())
         {
             moddedKeys[key]=value;
@@ -271,15 +304,19 @@ void MetadataDialog::writeMetadata()
     
     QStringList ReplacedKeys;
     DB_metaInfo_t *meta = deadbeef->pl_get_metadata_head(DBItem);
-    while (meta) {
+    while (meta)
+    {
         DB_metaInfo_t *next = meta->next;
         QString Key(meta->key);
-        if (Key.front() != QChar(58) && Key.front() != QChar(33) && Key.front() != QChar(95)) {
+
+        if (Key.front() != QChar(58) && Key.front() != QChar(33) && Key.front() != QChar(95))
+        {
             if (!moddedKeysList.contains(Key))
                 DBAPI->pl_delete_metadata(DBItem, meta);
             else
                 ReplacedKeys << Key;
         }
+
         meta = next;
     }
     
@@ -310,12 +347,15 @@ void MetadataDialog::writeMetadata()
         // find decoder
         DB_decoder_t *dec = NULL;
         DB_decoder_t **decoders = DBAPI->plug_get_decoder_list();
-        for (int i = 0; decoders[i]; i++) {
-            if (!strcmp (decoders[i]->plugin.id, decoder_id)) {
+        for (int i = 0; decoders[i]; i++)
+        {
+            if (!strcmp (decoders[i]->plugin.id, decoder_id))
+            {
                 dec = decoders[i];
-                if (dec->write_metadata) {
+
+                if (dec->write_metadata)
                     dec->write_metadata(DBItem);
-                }
+
                 break;
             }
         }
@@ -349,7 +389,8 @@ void MetadataDialog::metaDataMenuRequested(QPoint p)
     QAction *editInDlgAction = new QAction(tr("Edit"), this);
     connect(editInDlgAction, &QAction::triggered, [this, item]() { this->editValueInDialog(item); });
     QAction *deleteAction = new QAction(tr("Delete"), this);
-    connect(deleteAction, &QAction::triggered, [this, item, key, index]() { 
+
+    connect(deleteAction, &QAction::triggered, [this, item, key, index]() {
         item->setText("");
         item->setData(QVariant());
         if (key->data().toBool() == true)
@@ -358,12 +399,14 @@ void MetadataDialog::metaDataMenuRequested(QPoint p)
             resizeMetaColumns();
         }
     });
+
     QAction *addAction = new QAction(tr("Add"), this);
     connect(addAction, &QAction::triggered, [this]() { 
         bool ok;
         QString text = QInputDialog::getText(this, tr("New metadata entry"),
                                          tr("Input key name:"), QLineEdit::Normal,
                                          QString(""), &ok);
+
         if (ok && !text.isEmpty())
         {
             int i = modelMetaHeader->rowCount();
@@ -445,14 +488,9 @@ void MetadataDialog::Metadata_doubleClicked(const QModelIndex &index)
     QStandardItem *item = modelMetaHeader->itemFromIndex(value_index);
     
     if (item->data().isValid() && static_cast<QMetaType::Type>(item->data().type()) == QMetaType::QString)
-    {
         editValueInDialog(item);
-    }
     else
-    {
         ui->tableViewMeta->edit(value_index);
-    }
-        
 }
 
 void MetadataDialog::on_btnSettings_clicked()

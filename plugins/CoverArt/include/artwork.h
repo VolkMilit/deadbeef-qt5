@@ -7,7 +7,8 @@ extern DB_FILE *current_file;
 
 typedef void (*artwork_callback) (const char *fname, const char *artist, const char *album, void *user_data);
 
-typedef struct {
+typedef struct
+{
     DB_misc_t plugin;
     // returns filename of cached image, or NULL
     char* (*get_album_art) (const char *fname, const char *artist, const char *album, int size, artwork_callback callback, void *user_data);

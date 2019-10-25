@@ -8,7 +8,8 @@
 
 #define CACHE CoverArtCache::Instance()
 
-class CoverArtCache : public QObject {
+class CoverArtCache : public QObject
+{
     Q_OBJECT
 
 public:
@@ -29,10 +30,10 @@ private:
     QHash<QString, const QImage *> cache;
     QString currentName;
 
-public Q_SLOTS:
+public slots:
     void putCover(const QImage *);
 
-Q_SIGNALS:
+signals:
     void coverIsReady(const QImage *);
 };
 

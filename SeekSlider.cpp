@@ -3,7 +3,8 @@
 #include "QtGuiSettings.h"
 #include "GuiUpdater.h"
 
-SeekSlider::SeekSlider(QWidget *parent) : QSlider(parent) {
+SeekSlider::SeekSlider(QWidget *parent) : QSlider(parent)
+{
     activateNow = false;
     setRange(0, 100 * SEEK_SCALE);
     setOrientation(Qt::Horizontal);
@@ -11,39 +12,48 @@ SeekSlider::SeekSlider(QWidget *parent) : QSlider(parent) {
     connect(GuiUpdater::Instance(), SIGNAL(isPlaying(bool)), this, SLOT(setEnabled(bool)));
 }
 
-SeekSlider::~SeekSlider() {
-}
+SeekSlider::~SeekSlider() {}
 
-void SeekSlider::mouseReleaseEvent(QMouseEvent *ev) {
+void SeekSlider::mouseReleaseEvent(QMouseEvent *ev)
+{
     DBAPI->playback_set_pos(value() / SEEK_SCALE);
     activateNow = false;
 }
 
 
-void SeekSlider::mousePressEvent(QMouseEvent *ev) {
+void SeekSlider::mousePressEvent(QMouseEvent *ev)
+{
     activateNow = true;
     setValue(pos(ev));
 }
 
-void SeekSlider::mouseMoveEvent(QMouseEvent *ev) {
+void SeekSlider::mouseMoveEvent(QMouseEvent *ev)
+{
     setValue(pos(ev));
 }
 
-void SeekSlider::wheelEvent(QWheelEvent *ev) {
+void SeekSlider::wheelEvent(QWheelEvent *ev)
+{
     ev->ignore();
 }
 
-void SeekSlider::onFrameUpdate() {
-    if (activateNow) return;
+void SeekSlider::onFrameUpdate()
+{
+    if (activateNow)
+        return;
+
     if (isHidden() || parentWidget()->isHidden())
         return;
+
     if (!DBAPI->get_output())
         return;
+
     if (DBAPI->get_output()->state() == OUTPUT_STATE_PLAYING || DBAPI->get_output()->state() == OUTPUT_STATE_PAUSED)
         setValue(DBAPI->playback_get_pos() * SEEK_SCALE);
 }
 
-int SeekSlider::pos(QMouseEvent *ev) const {
+int SeekSlider::pos(QMouseEvent *ev) const
+{
     int val = ((float)ev->x() / this->width()) * maximum();
     if(val >= maximum()) return maximum();
     if(val <= minimum()) return minimum();

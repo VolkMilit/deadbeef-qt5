@@ -32,7 +32,7 @@ private:
 
     QHash<QWidget *, QString> keys;
 
-public Q_SLOTS:
+public slots:
     void saveProperty();
     void killDialog();
 };

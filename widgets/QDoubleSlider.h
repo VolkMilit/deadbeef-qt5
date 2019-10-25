@@ -7,7 +7,7 @@ class QDoubleSlider : public QSlider
     Q_OBJECT
 
 public:
-    QDoubleSlider(Qt::Orientation orientation, double multiplier, QWidget* pParent = NULL);
+    QDoubleSlider(Qt::Orientation orientation, double multiplier, QWidget *pParent = nullptr);
 
     void setRange(double Min, double Max);
     void setMinimum(double Min);
@@ -17,19 +17,17 @@ public:
     double value() const;
 
     public slots:
-    void setValue(int value);
-    void setValue(double Value, bool BlockSignals = false);
+        void setValue(int value);
+        void setValue(double Value, bool BlockSignals = false);
 
-    private slots:
-
-signals :
-    void valueChanged(double Value);
+    signals:
+        void valueChanged(double Value);
         void rangeChanged(double Min, double Max);
 
-private:
-    double	m_Multiplier;
+    private:
+        double	m_Multiplier;
     
-protected:
-    virtual void sliderChange(SliderChange change);
+    protected:
+        virtual void sliderChange(SliderChange change);
 };
 #endif

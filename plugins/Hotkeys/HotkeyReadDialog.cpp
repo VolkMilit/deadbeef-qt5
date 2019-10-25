@@ -17,41 +17,39 @@ HotkeyReadDialog::HotkeyReadDialog(const QString &actionTitle, QWidget *parent):
     setLayout(&vbox);
 }
 
-HotkeyReadDialog::~HotkeyReadDialog() {
+HotkeyReadDialog::~HotkeyReadDialog() {}
 
-}
-
-void HotkeyReadDialog::keyPressEvent(QKeyEvent *e) {
-    switch (e->key()) {
-    case Qt::Key_Shift:
-        hotkey.setText(hotkey.text() + "Shift ");
-        return;
-        break;
-    case Qt::Key_Control:
-        hotkey.setText(hotkey.text() + "Ctrl ");
-        return;
-        break;
-    case Qt::Key_Meta:
-        hotkey.setText(hotkey.text() + "Super ");
-        return;
-        break;
-    case Qt::Key_Alt:
-        hotkey.setText(hotkey.text() + "Alt ");
-        return;
-        break;
-    default:
-        break;
+void HotkeyReadDialog::keyPressEvent(QKeyEvent *e)
+{
+    switch (e->key())
+    {
+        case Qt::Key_Shift:
+            hotkey.setText(hotkey.text() + "Shift ");
+            return;
+        case Qt::Key_Control:
+            hotkey.setText(hotkey.text() + "Ctrl ");
+            return;
+        case Qt::Key_Meta:
+            hotkey.setText(hotkey.text() + "Super ");
+            return;
+        case Qt::Key_Alt:
+            hotkey.setText(hotkey.text() + "Alt ");
+            return;
+        default:
+            break;
     }
     const char *name = HOTKEYS->get_name_for_keycode(e->nativeVirtualKey());
     hotkey.setText(hotkey.text() + QString::fromUtf8(name));
 }
 
-void HotkeyReadDialog::keyReleaseEvent(QKeyEvent *e) {
+void HotkeyReadDialog::keyReleaseEvent(QKeyEvent *e)
+{
     if (e->key() == Qt::Key_Shift ||
             e->key() == Qt::Key_Control ||
             e->key() == Qt::Key_Meta ||
             e->key() == Qt::Key_Alt)
         return;
+
     emit hotkeyChanged(hotkey.text());
     close();
 }

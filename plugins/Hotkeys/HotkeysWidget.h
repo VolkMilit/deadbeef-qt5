@@ -11,7 +11,8 @@ class HotkeysWidget : public QWidget
 {
     Q_OBJECT
 public:
-    HotkeysWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    HotkeysWidget(QWidget* parent = nullptr, Qt::WindowFlags f = nullptr);
+
 private:
     void createConnections();
     
@@ -21,12 +22,11 @@ private:
     HotkeyLineEdit hotkeyLineEdit;
     QPushButton clearHotkeyButton;
 
-private Q_SLOTS:
+private slots:
     void catchHotkey();
     void setHotkeyLineEdit();
     void clearHotkey();
     void applyHotkey(const QString &hotkey);
-
 };
 
 #endif // HOTKEYSWIDGET_H

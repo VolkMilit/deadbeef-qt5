@@ -38,16 +38,16 @@ private:
     PlayList playList;
     TabBar::TabBarPosition tabBarPosition;
     
-public Q_SLOTS:
+public slots:
     void refresh();
     
-private Q_SLOTS:
+private slots:
     void selectPlaylist(int);
     void closePlylist(int);
     void renamePlaylist(int, const QString &);
     void setTabBarPosition(TabBar::TabBarPosition);
     
-Q_SIGNALS:
+signals:
     void newPlaylist();
 };
 

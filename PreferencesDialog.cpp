@@ -26,7 +26,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     this->resize(800, 600);
 }
 
-void PreferencesDialog::configureTabs() {
+void PreferencesDialog::configureTabs()
+{
     tabWidget.addTab(&interfaceWidget, tr("Interface"));
     tabWidget.addTab(&soundWidget, tr("Sound"));
     tabWidget.addTab(&dspWidget, tr("DSP"));
@@ -38,12 +39,14 @@ void PreferencesDialog::configureTabs() {
     this->adjustSize();
 }
 
-void PreferencesDialog::configureLayout() {
+void PreferencesDialog::configureLayout()
+{
     vbox.addWidget(&tabWidget);
     vbox.addWidget(&buttonBox);
 }
 
-void PreferencesDialog::configureConnections() {
+void PreferencesDialog::configureConnections()
+{
     connect(&interfaceWidget, SIGNAL(setCloseOnMinimize(bool)), SIGNAL(setCloseOnMinimize(bool)));
     connect(&interfaceWidget, SIGNAL(setTrayIconHidden(bool)), SIGNAL(setTrayIconHidden(bool)));
     connect(&interfaceWidget, SIGNAL(setTrayIconTheme(const QString &)), SIGNAL(setTrayIconTheme(const QString &)));
@@ -52,7 +55,8 @@ void PreferencesDialog::configureConnections() {
     connect(&buttonBox, SIGNAL(accepted()), SLOT(on_buttonBox_accepted()));
 }
 
-void PreferencesDialog::on_buttonBox_accepted() {
+void PreferencesDialog::on_buttonBox_accepted()
+{
     DBAPI->sendmessage(DB_EV_CONFIGCHANGED, 0, 0, 0);
     close();
 }

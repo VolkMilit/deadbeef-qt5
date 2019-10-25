@@ -5,7 +5,10 @@
 
 #include "QtGui.h"
 
-TabBar::TabBar(QWidget *parent) : QTabBar(parent), tabContextMenu(this) {
+TabBar::TabBar(QWidget *parent) :
+    QTabBar(parent),
+    tabContextMenu(this)
+{
     configure();
     fillTabs();
     buildTabContextMenu();
@@ -13,22 +16,27 @@ TabBar::TabBar(QWidget *parent) : QTabBar(parent), tabContextMenu(this) {
     createConnections();
 }
 
-TabBar::~TabBar() {
+TabBar::~TabBar()
+{
     delete delPlaylist;
     delete renPlaylist;
     delete addPlaylist;
 }
 
-void TabBar::createConnections() {
+void TabBar::createConnections()
+{
     connect(this, SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
     connect(this, SIGNAL(tabContextMenuRequested(int, QPoint)), SLOT(showTabContextMenu(int, QPoint)));
     connect(this, SIGNAL(tabMoved(int,int)), SLOT(moveTab(int,int)));
 }
 
-void TabBar::fillTabs() {
+void TabBar::fillTabs()
+{
     int cnt = DBAPI->plt_get_count();
     char title[100];
-    for (int i = 0; i < cnt; i++) {
+
+    for (int i = 0; i < cnt; i++)
+    {
         DBAPI->pl_lock();
         DBAPI->plt_get_title(DBAPI->plt_get_for_idx(i), title, sizeof(title));
         DBAPI->pl_unlock();
@@ -37,7 +45,8 @@ void TabBar::fillTabs() {
     }
 }
 
-void TabBar::configure() {
+void TabBar::configure()
+{
     setAcceptDrops(true);
     setMouseTracking(true);
     setMovable(true);
@@ -45,15 +54,19 @@ void TabBar::configure() {
     setSelectionBehaviorOnRemove(SelectLeftTab);
 }
 
-void TabBar::selectLastTab() {
+void TabBar::selectLastTab()
+{
     setCurrentIndex(DBAPI->plt_get_curr_idx());
-    if (count() == 1) {
+
+    if (count() == 1)
+    {
         setTabsClosable(false);
         delPlaylist->setEnabled(false);
     }
 }
 
-void TabBar::mouseDoubleClickEvent(QMouseEvent *event) {
+void TabBar::mouseDoubleClickEvent(QMouseEvent *event)
+{
     if (event->button() != Qt::LeftButton)
         return;
 
@@ -67,59 +80,87 @@ void TabBar::mouseDoubleClickEvent(QMouseEvent *event) {
     QTabBar::mouseDoubleClickEvent(event);
 }
 
-void TabBar::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
+void TabBar::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
         int tab = selectTab(event->pos());
         if (tab != -1)
             emit tabSelected(tab);
-    } else if (event->button() == Qt::RightButton) {
+    }
+    else if (event->button() == Qt::RightButton)
+    {
         int tab = selectTab(event->pos());
+
         if (tab != -1)
             emit tabContextMenuRequested(tab, mapToGlobal(event->pos()));
         else
             emit emptyAreaContextMenuRequested(mapToGlobal(event->pos()));
+
         return;
     }
 
     QTabBar::mousePressEvent(event);
 }
 
-QSize TabBar::tabSizeHint(int index) const {
+QSize TabBar::tabSizeHint(int index) const
+{
     return QTabBar::tabSizeHint(index);
 }
 
-void TabBar::wheelEvent(QWheelEvent *event) {
-    if (!(event->orientation() == Qt::Horizontal)) {
-        if (receivers(SIGNAL(wheelDelta(int)))) {
+void TabBar::wheelEvent(QWheelEvent *event)
+{
+    if (!(event->orientation() == Qt::Horizontal))
+    {
+        if (receivers(SIGNAL(wheelDelta(int))))
+        {
             emit(wheelDelta(event->delta()));
             return;
         }
+
         int lastIndex = count() - 1;
         int targetIndex = -1;
         bool forward = event->delta() < 0;
+
         if (forward && lastIndex == currentIndex())
+        {
             targetIndex = 0;
+        }
         else
+        {
             if (!forward && 0 == currentIndex())
                 targetIndex = lastIndex;
+        }
+
         setCurrentIndex(targetIndex);
+
         if (targetIndex != currentIndex() || !isTabEnabled(targetIndex))
             QTabBar::wheelEvent(event);
+
         event->accept();
         emit tabSelected(currentIndex());
-    } else
+    }
+    else
+    {
         event->ignore();
+    }
 }
 
-int TabBar::selectTab(const QPoint &pos) const {
+int TabBar::selectTab(const QPoint &pos) const
+{
     const int tabCount = count();
+
     for (int i = 0; i < tabCount; ++i)
+    {
         if (tabRect(i).contains(pos))
             return i;
+    }
+
     return -1;
 }
 
-void TabBar::buildTabContextMenu() {
+void TabBar::buildTabContextMenu()
+{
     renPlaylist = new QAction(tr("Rename playlist"), &tabContextMenu);
     connect(renPlaylist, SIGNAL(triggered()), this, SLOT(renamePlaylist()));
     addPlaylist = new QAction(tr("Add new playlist"), &tabContextMenu);
@@ -155,89 +196,119 @@ void TabBar::buildTabContextMenu() {
     top->setChecked(true);
 }
 
-void TabBar::showTabContextMenu(int index, QPoint globalPos) {
+void TabBar::showTabContextMenu(int index, QPoint globalPos)
+{
     indexForAction = index;
     tabContextMenu.move(globalPos);
     tabContextMenu.show();
 }
 
-void TabBar::moveTab(int to, int from) {
+void TabBar::moveTab(int to, int from)
+{
     DBAPI->plt_move(from, to);
 }
 
-void TabBar::newPlaylist() {
+void TabBar::newPlaylist()
+{
     int cnt = DBAPI->plt_get_count();
     int i;
     int idx = 0;
-    for (;;) {
+
+    for (;;)
+    {
         QString name = "";
+
         if (!idx)
             name = tr("New Playlist");
         else
             name = tr("New Playlist (%1)").arg(idx);
+
         DBAPI->pl_lock();
-        for (i = 0; i < cnt; i++) {
+
+        for (i = 0; i < cnt; i++)
+        {
             char t[100];
             DBAPI->plt_get_title(DBAPI->plt_get_for_idx(i), t, sizeof(t));
+
             if (!strcasecmp (t, name.toUtf8().constData()))
                 break;
         }
+
         DBAPI->pl_unlock();
-        if (i == cnt) {
+
+        if (i == cnt)
+        {
             DBAPI->plt_add(cnt, name.toUtf8().constData());
-            if (count() == 1) {
+
+            if (count() == 1)
+            {
                 setTabsClosable(true);
                 delPlaylist->setEnabled(true);
             }
+
             insertTab(cnt, name);
             setCurrentIndex(cnt);
             emit tabSelected(cnt);
             return;
         }
+
         idx++;
     }
 }
 
-void TabBar::closeTab(int index) {
-    if (count() == 2) {
+void TabBar::closeTab(int index)
+{
+    if (count() == 2)
+    {
         setTabsClosable(false);
         delPlaylist->setEnabled(false);
     }
+
     removeTab(index);
     emit tabClosed(index);
 }
 
-void TabBar::closeTab() {
+void TabBar::closeTab()
+{
     closeTab(indexForAction);
 }
 
-void TabBar::renamePlaylist() {
+void TabBar::renamePlaylist()
+{
     bool ok;
     QString newName = QInputDialog::getText(this, tr("Choose new name"), tr("Enter new playlist name: "), QLineEdit::Normal, tabText(indexForAction), &ok);
-    if (ok && !newName.isEmpty()) {
+
+    if (ok && !newName.isEmpty())
+    {
         setTabText(indexForAction, newName);
         emit tabRenamed(indexForAction, newName);
     }
 }
 
-void TabBar::setBottomPosition() {
+void TabBar::setBottomPosition()
+{
     emit changeTabPosition(TabBar::Bottom);
 }
 
-void TabBar::setLeftPosition() {
+void TabBar::setLeftPosition()
+{
     emit changeTabPosition(TabBar::Left);
 }
 
-void TabBar::setRightPosition() {
+void TabBar::setRightPosition()
+{
     emit changeTabPosition(TabBar::Right);
 }
 
-void TabBar::setTopPosition() {
+void TabBar::setTopPosition()
+{
     emit changeTabPosition(TabBar::Top);
 }
 
-void TabBar::setShape(QTabBar::Shape shape) {
-    switch (shape) {
+void TabBar::setShape(QTabBar::Shape shape)
+{
+    switch (shape)
+    {
         case QTabBar::RoundedNorth:
         case QTabBar::TriangularNorth:
             top->setChecked(true);
@@ -255,6 +326,7 @@ void TabBar::setShape(QTabBar::Shape shape) {
             right->setChecked(true);
             break;
     }
+
     QTabBar::setShape(shape);
 }
 

@@ -20,11 +20,13 @@ PluginsPreferencesWidget::PluginsPreferencesWidget(QWidget *parent, Qt::WindowFl
     createPluginsSettings();
 }
 
-PluginsPreferencesWidget::~PluginsPreferencesWidget() {
+PluginsPreferencesWidget::~PluginsPreferencesWidget()
+{
     delete ui;
 }
 
-void PluginsPreferencesWidget::createPluginsSettings() {
+void PluginsPreferencesWidget::createPluginsSettings()
+{
     QList<int> sizes;
     sizes.append(120);
     sizes.append(200);
@@ -35,7 +37,9 @@ void PluginsPreferencesWidget::createPluginsSettings() {
     connect(ui->btnBlacklist, SIGNAL(pressed()), SLOT(manageBlacklist()));
     
     plugins = DBAPI->plug_get_list();
-    for (int i = 0; plugins[i]; i++) {
+
+    for (int i = 0; plugins[i]; i++)
+    {
         QString name = QString::fromUtf8(plugins[i]->name);
         ui->pluginsList->addItem(name);
     }
@@ -43,50 +47,63 @@ void PluginsPreferencesWidget::createPluginsSettings() {
     ui->pluginsList->setCurrentRow(0);
 }
 
-void PluginsPreferencesWidget::manageBlacklist() {
+void PluginsPreferencesWidget::manageBlacklist()
+{
     DBAPI->conf_lock();
     bool ok;
+
     QString blackList = QString::fromUtf8(DBAPI->conf_get_str_fast("blacklist_plugins", ""));
+
     DBAPI->conf_unlock();
+
     blackList = QInputDialog::getText(this, tr("Plugin blacklist"),
             tr("Type in the plugin file names without extension, split multiple names by space:"), QLineEdit::Normal, blackList, &ok);
+
     if (ok)
-    {
         DBAPI->conf_set_str("blacklist_plugins", blackList.toUtf8().constData());
-    }
 }
 
-void PluginsPreferencesWidget::loadPluginInfo(int item) {
+void PluginsPreferencesWidget::loadPluginInfo(int item)
+{
     DB_plugin_s *plugin = plugins[item];
+
     if (!plugin->descr && !plugin->website && !plugin->copyright)
+    {
         ui->pluginDescriptionPanel->setVisible(false);
-    else {
+    }
+    else
+    {
         ui->pluginDescription->setText(plugin->descr ? QString::fromUtf8(plugin->descr) : tr("No description"));
         ui->linkButton->setVisible(plugin->website);
         ui->copyrightButton->setVisible(plugin->copyright);
+
         if (plugin->website)
             ui->linkButton->setToolTip(plugin->website);
+
         if (plugin->copyright)
             copyrightDialog.setText(plugin->copyright);
     }
     
-    if (spacer) {
+    if (spacer)
+    {
         ui->scrollAreaWidgetContents->layout()->removeItem(spacer);
         delete spacer;
     }
     
-    if (plugin->configdialog) {
+    if (plugin->configdialog)
+    {
         ddb_dialog_t conf;
         conf.title = plugin->name;
         conf.layout = plugin->configdialog;
         conf.get_param = conf_get_str;
         configurePluginSettingsPanel(&conf);
     }
-    else {
-        if (settingsWidget) {
+    else
+    {
+        if (settingsWidget)
             delete settingsWidget;
-        }
     }
+
     spacer = new QSpacerItem(10, 5, QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui->scrollAreaWidgetContents->layout()->addItem(spacer);
 }
