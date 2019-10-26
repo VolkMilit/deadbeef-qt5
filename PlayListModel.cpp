@@ -7,9 +7,8 @@
 PlayListModel::PlayListModel(QObject *parent) : QAbstractItemModel(parent),
     playIcon(":/root/images/play_64.png"),
     pauseIcon(":/root/images/pause_64.png") {
-    connect(DBApiWrapper::Instance(), SIGNAL(trackChanged(DB_playItem_t *, DB_playItem_t *)),
-            this, SLOT(trackChanged(DB_playItem_t*,DB_playItem_t*)));
-    connect(DBApiWrapper::Instance(), SIGNAL(playbackPaused()), this, SLOT(playerPaused()));
+    connect(DBApiWrapper::Instance(), &DBApiWrapper::trackChanged, this, &PlayListModel::trackChanged);
+    connect(DBApiWrapper::Instance(), &DBApiWrapper::playbackPaused, this, &PlayListModel::playerPaused);
     columnNames.insert("%s", tr("Status"));
     columnNames.insert("%n", tr("№"));
     columnNames.insert("%t", tr("Title"));

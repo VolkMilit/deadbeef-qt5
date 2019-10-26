@@ -39,7 +39,7 @@ private slots:
 
 signals:
     void setTrayIconHidden(bool);
-    void setTrayIconTheme(const QString &);
+    //void setTrayIconTheme(const QString &);
     void setCloseOnMinimize(bool);
     void titlePlayingChanged();
     void titleStoppedChanged();

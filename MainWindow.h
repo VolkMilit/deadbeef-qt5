@@ -27,7 +27,6 @@ public:
     ~MainWindow();
     static MainWindow *Instance();
     static void Destroy();
-    QMap<QString, QIcon> trayIconTheme;
 
 protected:
     void changeEvent(QEvent *);
@@ -53,7 +52,6 @@ private:
     Ui::MainWindow *ui;
 
     SystemTrayIcon *trayIcon;
-    QMenu *trayMenu;
     VolumeSlider volumeSlider;
     SeekSlider progressBar;
     QLabel status;
@@ -64,8 +62,6 @@ private:
 
     QActionGroup orderGroup;
     QActionGroup loopingGroup;
-    
-    QIcon defaultTrayIcon;
 
     void createConnections();
 
@@ -113,14 +109,11 @@ private slots:
     void onCoverartClose();
 #endif
 
-    void trayIcon_wheeled(int);
-    void trayIcon_activated(QSystemTrayIcon::ActivationReason);
-
     void trackChanged(DB_playItem_t *, DB_playItem_t *);
 
     void setCloseOnMinimized(bool);
     void setTrayIconHidden(bool);
-    void setTrayIconTheme(const QString &variant);
+    //void setTrayIconTheme(const QString &variant);
     void titleSettingChanged();
     void on_actionPlayListHeader_triggered();
     void on_actionHideTabBar_triggered();

@@ -42,13 +42,15 @@ void InterfacePreferencesWidget::loadSettings()
     
     ui->TrayIconThemeLabel->setVisible(!trayIconIsHidden);
     ui->TrayIconThemeComboBox->setVisible(!trayIconIsHidden);
-    QStringList trayIconTheme = MainWindow::Instance()->trayIconTheme.keys();
-    trayIconTheme.sort();
 
-    if (trayIconTheme.contains(QString("Default")))
-        trayIconTheme.move(trayIconTheme.indexOf(QString("Default")), 0);
+    // TODO
+    //QStringList trayIconTheme = MainWindow::Instance()->trayIconTheme.keys();
+    //trayIconTheme.sort();
 
-    ui->TrayIconThemeComboBox->addItems(trayIconTheme);
+    //if (trayIconTheme.contains(QString("Default")))
+    //    trayIconTheme.move(trayIconTheme.indexOf(QString("Default")), 0);
+
+    //ui->TrayIconThemeComboBox->addItems(trayIconTheme);
 
     int trayIconThemeIndex = ui->TrayIconThemeComboBox->findText(TrayIconTheme);
 
@@ -126,8 +128,8 @@ void InterfacePreferencesWidget::saveTrayIconHidden(bool hidden)
 
 void InterfacePreferencesWidget::saveTrayIconTheme(const QString &variant)
 {
-    SETTINGS->setTrayIconTheme(variant);
-    emit setTrayIconTheme(variant);
+    /*SETTINGS->setTrayIconTheme(variant);
+    emit setTrayIconTheme(variant);*/
 }
 
 void InterfacePreferencesWidget::saveTrackInfoOnSwitch(bool show)

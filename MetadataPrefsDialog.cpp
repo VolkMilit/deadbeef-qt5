@@ -45,26 +45,25 @@ MetadataPrefsDialog::MetadataPrefsDialog(QWidget *parent) :
     ui->lineEditID3v1Encoding->setText(DBAPI->conf_get_str_fast("mp3.id3v1_encoding", "iso8859-1"));
     DBAPI->conf_unlock();
     
-    connect(ui->mp3WriteID3v2, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->mp3WriteID3v1, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->mp3WriteAPEv2, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->mp3StripID3v2, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->mp3StripID3v1, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->mp3StripAPEv2, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
+    connect(ui->mp3WriteID3v2, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->mp3WriteID3v1, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->mp3WriteAPEv2, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->mp3StripID3v2, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->mp3StripID3v1, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->mp3StripAPEv2, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
     
-    connect(ui->apeWriteID3v2, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->apeWriteAPEv2, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->apeStripID3v2, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->apeStripAPEv2, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
+    connect(ui->apeWriteID3v2, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->apeWriteAPEv2, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->apeStripID3v2, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->apeStripAPEv2, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
     
-    connect(ui->wvWriteAPEv2, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->wvWriteID3v1, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->wvStripAPEv2, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
-    connect(ui->wvStripID3v1, SIGNAL(toggled(bool)), this, SLOT(setDirty()));
+    connect(ui->wvWriteAPEv2, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->wvWriteID3v1, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->wvStripAPEv2, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
+    connect(ui->wvStripID3v1, &QCheckBox::toggled, this, &MetadataPrefsDialog::setDirty);
     
-    connect(ui->comboBoxID3v2Version, SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
-    connect(ui->lineEditID3v1Encoding, SIGNAL(textChanged(const QString &)), this, SLOT(setDirty()));
-    
+    connect(ui->comboBoxID3v2Version, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MetadataPrefsDialog::setDirty);
+    connect(ui->lineEditID3v1Encoding, &QLineEdit::textChanged, this, &MetadataPrefsDialog::setDirty);
 }
 
 MetadataPrefsDialog::~MetadataPrefsDialog()
@@ -86,6 +85,7 @@ void MetadataPrefsDialog::reject()
                 tr("Do you want to save your configurations?"),
                 QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel,
                 QMessageBox::Cancel);
+
         if (result == QMessageBox::Cancel)
             return;
         else if (result == QMessageBox::Yes)

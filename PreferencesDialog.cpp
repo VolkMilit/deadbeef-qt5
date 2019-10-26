@@ -55,11 +55,11 @@ void PreferencesDialog::configureLayout()
 
 void PreferencesDialog::configureConnections()
 {
-    connect(&interfaceWidget, SIGNAL(setCloseOnMinimize(bool)), SIGNAL(setCloseOnMinimize(bool)));
-    connect(&interfaceWidget, SIGNAL(setTrayIconHidden(bool)), SIGNAL(setTrayIconHidden(bool)));
-    connect(&interfaceWidget, SIGNAL(setTrayIconTheme(const QString &)), SIGNAL(setTrayIconTheme(const QString &)));
-    connect(&interfaceWidget, SIGNAL(titlePlayingChanged()), SIGNAL(titlePlayingChanged()));
-    connect(&interfaceWidget, SIGNAL(titleStoppedChanged()), SIGNAL(titleStoppedChanged()));
+    connect(&interfaceWidget, &InterfacePreferencesWidget::setCloseOnMinimize, this, &PreferencesDialog::setCloseOnMinimize);
+    connect(&interfaceWidget, &InterfacePreferencesWidget::setTrayIconHidden, this, &PreferencesDialog::setTrayIconHidden);
+    //connect(&interfaceWidget, &InterfacePreferencesWidget::setTrayIconTheme, this, &PreferencesDialog::setTrayIconTheme);
+    connect(&interfaceWidget, &InterfacePreferencesWidget::titlePlayingChanged, this, &PreferencesDialog::titlePlayingChanged);
+    connect(&interfaceWidget, &InterfacePreferencesWidget::titleStoppedChanged, this, &PreferencesDialog::titleStoppedChanged);
     connect(&buttonOk, &QPushButton::clicked, this, &PreferencesDialog::on_buttonOk_clicked);
     connect(&buttonApply, &QPushButton::clicked, this, &PreferencesDialog::on_buttonApply_clicked);
 }

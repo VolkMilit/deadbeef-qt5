@@ -4,8 +4,10 @@
 #include <QFileDialog>
 
 
-class DBFileDialog : public QFileDialog {
+class DBFileDialog : public QFileDialog
+{
     Q_OBJECT
+
 public:
     DBFileDialog(QWidget *parent,
                  const QString &caption = QString(),

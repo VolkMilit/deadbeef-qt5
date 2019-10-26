@@ -10,7 +10,8 @@
 
 #define SEEK_SCALE 10
 
-class SeekSlider : public QSlider {
+class SeekSlider : public QSlider
+{
     Q_OBJECT
 
 public:

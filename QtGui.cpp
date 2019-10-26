@@ -48,30 +48,35 @@ extern "C" {
     }
 }
 
-static int pluginMessage(uint32_t id, uintptr_t ctx, uint32_t p1, uint32_t p2) {
-    switch (id) {
-    case DB_EV_SONGCHANGED:
-        WRAPPER->onSongChanged((ddb_event_trackchange_t *)ctx);
-        break;
-    case DB_EV_PAUSED:
-        WRAPPER->onPause();
-        break;
-    case DB_EV_PLAYLISTCHANGED:
-        WRAPPER->onPlaylistChanged();
-        break;
-    case DB_EV_ACTIVATED:
-        WRAPPER->onDeadbeefActivated();
-        break;
+static int pluginMessage(uint32_t id, uintptr_t ctx, uint32_t p1, uint32_t p2)
+{
+    switch (id)
+    {
+        case DB_EV_SONGCHANGED:
+            WRAPPER->onSongChanged((ddb_event_trackchange_t *)ctx);
+            break;
+        case DB_EV_PAUSED:
+            WRAPPER->onPause();
+            break;
+        case DB_EV_PLAYLISTCHANGED:
+            WRAPPER->onPlaylistChanged();
+            break;
+        case DB_EV_ACTIVATED:
+            WRAPPER->onDeadbeefActivated();
+            break;
     }
+
     return 0;
 }
 
-static int pluginStart() {
+static int pluginStart()
+{
     thread =  deadbeef->thread_start(MainThreadRun, NULL);
     return 0;
 }
 
-static int pluginStop() {
+static int pluginStop()
+{
     QApplication::quit();
     qDebug() << "waiting for Qt thread to finish";
     deadbeef->thread_join(thread);
@@ -81,16 +86,17 @@ static int pluginStop() {
     return 0;
 }
 
-static int pluginConnect() {
+static int pluginConnect()
+{
 #ifdef ARTWORK_ENABLED
-    coverart_plugin = (DB_artwork_plugin_t *)DBAPI->plug_get_for_id("artwork");
+    coverart_plugin = reinterpret_cast<DB_artwork_plugin_t *>(DBAPI->plug_get_for_id("artwork"));
     if (coverart_plugin)
         qDebug() << "qtui: found cover-art plugin";
 
 #endif
 
 #ifdef HOTKEYS_ENABLED
-    hotkeys_plugin = (DB_hotkeys_plugin_t *)DBAPI->plug_get_for_id("hotkeys");
+    hotkeys_plugin = reinterpret_cast<DB_hotkeys_plugin_t *>(DBAPI->plug_get_for_id("hotkeys"));
     if (hotkeys_plugin)
         qDebug() << "qtui: found global hotkeys plugin";
 #endif
@@ -98,7 +104,8 @@ static int pluginConnect() {
 }
 
 
-void MainThreadRun(void *) {
+void MainThreadRun(void *)
+{
     int argc = 1;
     char name[] = "deadbeef";
     char *argv[] = { name, nullptr };

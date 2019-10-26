@@ -36,20 +36,26 @@ void QtGuiSettings::Destroy()
     delete instance;
 }
 
-QtGuiSettings *QtGuiSettings::Instance() {
-    if (instance != nullptr) delete instance;
+QtGuiSettings *QtGuiSettings::Instance()
+{
+    if (instance != nullptr)
+        delete instance;
+
     instance = new QtGuiSettings();
+
     return instance;
 }
 
-QVariant QtGuiSettings::getValue(const QString &group, const QString &key, const QVariant &defaultValue) {
+QVariant QtGuiSettings::getValue(const QString &group, const QString &key, const QVariant &defaultValue)
+{
     settings.beginGroup(group);
     QVariant result = settings.value(key, defaultValue);
     settings.endGroup();
     return result;
 }
 
-void QtGuiSettings::setValue(const QString &group, const QString &key, const QVariant &value) {
+void QtGuiSettings::setValue(const QString &group, const QString &key, const QVariant &value)
+{
     settings.beginGroup(group);
     settings.setValue(key, value);
     settings.endGroup();

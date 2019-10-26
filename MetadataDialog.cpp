@@ -20,11 +20,11 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
     this->setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
-    connect(ui->tableViewMeta, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(Metadata_doubleClicked(const QModelIndex &)));
+    connect(ui->tableViewMeta, &QTableView::doubleClicked, this, &MetadataDialog::Metadata_doubleClicked);
     ui->tableViewMeta->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->tableViewMeta, SIGNAL(customContextMenuRequested(QPoint)), SLOT(metaDataMenuRequested(QPoint)));
+    connect(ui->tableViewMeta, &QTableView::customContextMenuRequested, this, &MetadataDialog::metaDataMenuRequested);
     ui->tableViewProps->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->tableViewProps, SIGNAL(customContextMenuRequested(QPoint)), SLOT(propsMenuRequested(QPoint)));
+    connect(ui->tableViewProps, &QTableView::customContextMenuRequested, this, &MetadataDialog::propsMenuRequested);
     
     //fill standart metadata keys
     metaDataKeys << "artist" << "title" << "album" << "year" << "genre" << "composer" \
@@ -103,9 +103,12 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
     }
 
     DBAPI->pl_unlock();
+
     int j;
     char fPath[PATH_MAX];
+
     DBAPI->pl_format_title(it, -1, fPath, sizeof (fPath), -1, "%F");
+
     ui->lineEditPath->setText(fPath);
     ui->lineEditPath->setReadOnly(true);
     
@@ -215,6 +218,7 @@ MetadataDialog::MetadataDialog(DB_playItem_t *it, QWidget *parent) :
     tableViewMeta->setSelectionMode(QAbstractItemView::SingleSelection);
     
     this->ui->btnApply->setEnabled(false);
+
     connect(modelMetaHeader, &QStandardItemModel::itemChanged, [this](){
         this->ui->btnApply->setEnabled(true);
     });
@@ -454,16 +458,19 @@ void MetadataDialog::editValueInDialog(QStandardItem *item)
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
         connect(buttonBox, &QDialogButtonBox::accepted, editDialog, &QDialog::accept);
         connect(buttonBox, &QDialogButtonBox::rejected, editDialog, &QDialog::reject);
+
         QPlainTextEdit *editField;
         if (item->data().isValid() && static_cast<QMetaType::Type>(item->data().type()) == QMetaType::QString)
             editField = new QPlainTextEdit(item->data().toString());
         else
             editField = new QPlainTextEdit(item->text());
+
         layout->addWidget(editField);
         layout->addWidget(buttonBox);
         editDialog->setWindowTitle(tr("Edit Metadata: ") + keyname->text());
         editDialog->setLayout(layout);
         editDialog->resize(600, 600);
+
         if (editDialog->exec())
         {
             QString valueStr = editField->toPlainText();

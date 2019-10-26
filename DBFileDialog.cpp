@@ -18,12 +18,14 @@ DBFileDialog::DBFileDialog(QWidget *parent,
     setNameFilters(filters);
 }
 
-int DBFileDialog::exec() {
+int DBFileDialog::exec()
+{
     int ret = QFileDialog::exec();
     if (!ret)
         return ret;
 
-    if (!selectedFiles().isEmpty()) {
+    if (!selectedFiles().isEmpty())
+    {
         QFileInfo fileInfo(selectedFiles().last());
         DBAPI->conf_set_str("filechooser.lastdir", fileInfo.path().toUtf8().constData());
     }

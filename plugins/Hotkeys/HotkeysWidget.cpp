@@ -75,7 +75,8 @@ void HotkeysWidget::applyHotkey(const QString &hotkey)
     setHotkeyLineEdit();
 }
 
-void HotkeysWidget::clearHotkey() {
+void HotkeysWidget::clearHotkey()
+{
     const QString title = hotkeysTreeWidget.currentItem()->text(0);
     DBAPI->conf_remove_items(hotkeysTreeWidget.hotkeys.key(title).toUtf8().constData());
     HOTKEYS->reset();

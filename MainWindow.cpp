@@ -22,16 +22,10 @@
 
 MainWindow *MainWindow::instance = nullptr;
 
-template <typename T>
-int signum(T val) {
-    return (T(0) < val) - (val < T(0));
-}
-
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
-        trayIcon(nullptr),
-        trayMenu(nullptr),
+        trayIcon(new SystemTrayIcon),
         volumeSlider(this),
         progressBar(this),
         status(this),
@@ -40,12 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
         orderGroup(this),
         loopingGroup(this)
-{
-    defaultTrayIcon = QIcon(":/root/images/bitmap.png");
-    trayIconTheme[QString("Default")] = defaultTrayIcon;
-    trayIconTheme[QString("Dark")] = QIcon(":/root/images/tray_dark.png");
-    trayIconTheme[QString("Light")] = QIcon(":/root/images/tray_light.png");
-    
+{  
     ui->setupUi(this);
     
     loadActions();
@@ -83,9 +72,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::createConnections()
 {
-    connect(DBApiWrapper::Instance(), SIGNAL(trackChanged(DB_playItem_t*,DB_playItem_t*)), this, SLOT(trackChanged(DB_playItem_t *, DB_playItem_t *)));
-    connect(ui->actionNewPlaylist, SIGNAL(triggered()), ui->playList, SIGNAL(newPlaylist()));
-    connect(DBApiWrapper::Instance(), SIGNAL(deadbeefActivated()), this, SLOT(on_deadbeefActivated()));
+    connect(DBApiWrapper::Instance(), &DBApiWrapper::trackChanged, this, &MainWindow::trackChanged);
+    connect(ui->actionNewPlaylist, &QAction::triggered, ui->playList, &PlayListWidget::newPlaylist);
+    connect(DBApiWrapper::Instance(), &DBApiWrapper::deadbeefActivated, this, &MainWindow::on_deadbeefActivated);
 
     connect(&progressBar, &SeekSlider::valueChanged, [this](){
         DB_playItem_s *it = DBAPI->streamer_get_playing_track();
@@ -138,28 +127,29 @@ void MainWindow::loadActions()
 
 void MainWindow::createTray()
 {
-    //trayIcon = new SystemTrayIcon(windowIcon(), this);
-    QString variant(SETTINGS->getTrayIconTheme());
-    if (trayIconTheme.contains(variant))
-        trayIcon = new SystemTrayIcon(trayIconTheme[variant], this);
-    else
-        trayIcon = new SystemTrayIcon(defaultTrayIcon, this);
-    
-    
-    trayMenu = new QMenu();
-    trayMenu->addAction(ui->actionPlay);
-    trayMenu->addAction(ui->actionPause);
-    trayMenu->addAction(ui->actionStop);
-    trayMenu->addAction(ui->actionNext);
-    trayMenu->addAction(ui->actionPrev);
-    trayMenu->addSeparator();
-    trayMenu->addAction(ui->actionPreferences);
-    trayMenu->addAction(ui->actionExit);
-    trayIcon->setContextMenu(trayMenu);
-    trayIcon->show();
+    trayIcon->addEntry(ui->actionPlay);
+    trayIcon->addEntry(ui->actionPause);
+    trayIcon->addEntry(ui->actionStop);
+    trayIcon->addEntry(ui->actionNext);
+    trayIcon->addEntry(ui->actionPrev);
+    trayIcon->addSeparator();
+    trayIcon->addEntry(ui->actionPreferences);
+    trayIcon->addEntry(ui->actionExit);
 
-    connect(trayIcon, &SystemTrayIcon::activated, this, &MainWindow::trayIcon_activated);
-    connect(trayIcon, &SystemTrayIcon::wheeled, this, &MainWindow::trayIcon_wheeled);
+    connect(trayIcon, &SystemTrayIcon::onTrigger, [this](){
+        if (isHidden())
+            show();
+        else
+            hide();
+    });
+
+    connect(trayIcon, &SystemTrayIcon::onMiddleClick, [&](){
+        DBAPI->sendmessage(DB_EV_TOGGLE_PAUSE, 0, 0, 0);
+    });
+
+    connect(trayIcon, &SystemTrayIcon::wheeled, [this](int delta){
+        volumeSlider.setValue(delta + volumeSlider.value());
+    });
 }
 
 void MainWindow::titleSettingChanged()
@@ -214,6 +204,7 @@ void MainWindow::closeEvent(QCloseEvent *e)
             e->accept();
             WRAPPER->Destroy();
             break;
+
         case Hide:
             e->ignore();
             if (isHidden())
@@ -221,6 +212,7 @@ void MainWindow::closeEvent(QCloseEvent *e)
             else
                 hide();
             break;
+
         case Minimize:
             e->ignore();
             showMinimized();
@@ -285,32 +277,12 @@ void MainWindow::on_actionPrev_triggered()
 void MainWindow::on_actionPause_triggered()
 {
     DBAPI->sendmessage(DB_EV_TOGGLE_PAUSE, 0, 0, 0);
-    //emit DBApiWrapper::Instance()->playbackPaused();
-}
-
-void MainWindow::trayIcon_activated(QSystemTrayIcon::ActivationReason reason)
-{
-    if (reason == QSystemTrayIcon::Trigger)
-    {
-        if (isHidden())
-            show();
-        else
-            hide();
-    }
-
-    if (reason == QSystemTrayIcon::MiddleClick)
-        DBAPI->sendmessage(DB_EV_TOGGLE_PAUSE, 0, 0, 0);
 }
 
 void MainWindow::on_actionExit_triggered()
 {
     actionOnClose = Exit;
     close();
-}
-
-void MainWindow::trayIcon_wheeled(int delta)
-{
-    volumeSlider.setValue(volumeSlider.value() + signum(delta));
 }
 
 void MainWindow::updateStatusBar(DB_playItem_t *it)
@@ -402,7 +374,7 @@ void MainWindow::on_actionPreferences_triggered()
 
         connect(prefDialog, &PreferencesDialog::setCloseOnMinimize, this, &MainWindow::setCloseOnMinimized);
         connect(prefDialog, &PreferencesDialog::setTrayIconHidden, this, &MainWindow::setTrayIconHidden);
-        connect(prefDialog, &PreferencesDialog::setTrayIconTheme, this, &MainWindow::setTrayIconTheme);
+        //connect(prefDialog, &PreferencesDialog::setTrayIconTheme, trayIcon, &SystemTrayIcon::setTrayTheme);
         connect(prefDialog, &PreferencesDialog::titlePlayingChanged, this, &MainWindow::titleSettingChanged);
         connect(prefDialog, &PreferencesDialog::titleStoppedChanged, this, &MainWindow::titleSettingChanged);
 
@@ -586,14 +558,6 @@ void MainWindow::setCloseOnMinimized(bool minimizeOnClose)
 {
     bool trayIconIsHidden = SETTINGS->getTrayIconIsHidden();
     configureActionOnClose(minimizeOnClose, trayIconIsHidden);
-}
-
-void MainWindow::setTrayIconTheme(const QString &variant)
-{
-    if (trayIconTheme.contains(variant))
-        trayIcon->setIcon(trayIconTheme[variant]);
-    else
-        trayIcon->setIcon(defaultTrayIcon);
 }
 
 void MainWindow::setTrayIconHidden(bool hideTrayIcon)

@@ -35,6 +35,7 @@ void QFileRequester::openDialog()
 {
     QString fileNames;
     QFileDialog dialog(this);
+
     if (dialog.exec())
     {
         fileNames = dialog.selectedFiles().join(":");

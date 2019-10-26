@@ -74,13 +74,13 @@ bool PlayList::eventFilter(QObject *target, QEvent *event)
 
 void PlayList::createConnections()
 {
-    connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(trackDoubleClicked(QModelIndex)));
-    connect(this, SIGNAL(enterRelease(QModelIndex)), SLOT(trackDoubleClicked(QModelIndex)));
+    connect(this, &PlayList::doubleClicked, this, &PlayList::trackDoubleClicked);
+    connect(this, &PlayList::enterRelease, this, &PlayList::trackDoubleClicked);
 
-    connect(header(), SIGNAL(customContextMenuRequested(QPoint)), SLOT(headerContextMenuRequested(QPoint)));
-    connect(header(), SIGNAL(sectionResized(int,int,int)), SLOT(saveHeaderState()));
-    connect(header(), SIGNAL(sectionMoved(int,int,int)), SLOT(saveHeaderState()));
-    connect(header(), SIGNAL(sectionClicked(int)), SLOT(saveHeaderState()));
+    connect(header(), &QHeaderView::customContextMenuRequested, this, &PlayList::headerContextMenuRequested);
+    connect(header(), &QHeaderView::sectionResized, this, &PlayList::saveHeaderState);
+    connect(header(), &QHeaderView::sectionMoved, this, &PlayList::saveHeaderState);
+    connect(header(), &QHeaderView::sectionClicked, this, &PlayList::saveHeaderState);
     connect(WRAPPER, SIGNAL(trackChanged(DB_playItem_t *, DB_playItem_t *)), this, SLOT(onTrackChanged(DB_playItem_t *, DB_playItem_t *)));
     connect(WRAPPER, SIGNAL(playlistChanged()), SLOT(refresh()));
 }

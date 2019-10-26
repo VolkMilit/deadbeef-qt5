@@ -22,6 +22,7 @@ public slots:
 private:
     Ui::MetadataPrefsDialog *ui;
     bool dirtyBit = false;
+
 private slots:
     void setDirty();
     void saveConfig();

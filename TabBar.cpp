@@ -25,9 +25,9 @@ TabBar::~TabBar()
 
 void TabBar::createConnections()
 {
-    connect(this, SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
-    connect(this, SIGNAL(tabContextMenuRequested(int, QPoint)), SLOT(showTabContextMenu(int, QPoint)));
-    connect(this, SIGNAL(tabMoved(int,int)), SLOT(moveTab(int,int)));
+    //connect(this, QOverload<void>::of(&TabBar::tabCloseRequested), this, &TabBar::closeTab);
+    connect(this, &TabBar::tabContextMenuRequested, this, &TabBar::showTabContextMenu);
+    connect(this, &TabBar::tabMoved, this, &TabBar::moveTab);
 }
 
 void TabBar::fillTabs()
@@ -162,11 +162,11 @@ int TabBar::selectTab(const QPoint &pos) const
 void TabBar::buildTabContextMenu()
 {
     renPlaylist = new QAction(tr("Rename playlist"), &tabContextMenu);
-    connect(renPlaylist, SIGNAL(triggered()), this, SLOT(renamePlaylist()));
+    connect(renPlaylist, &QAction::triggered, this, &TabBar::renamePlaylist);
     addPlaylist = new QAction(tr("Add new playlist"), &tabContextMenu);
-    connect(addPlaylist, SIGNAL(triggered()), this, SLOT(newPlaylist()));
+    connect(addPlaylist, &QAction::triggered, this, &TabBar::newPlaylist);
     delPlaylist = new QAction(tr("Remove playlist"), &tabContextMenu);
-    connect(delPlaylist, SIGNAL(triggered()), this, SLOT(closeTab()));
+    //connect(delPlaylist, &QAction::triggered, this, &TabBar::closeTab);
     
     tabContextMenu.addAction(renPlaylist);
     tabContextMenu.addAction(addPlaylist);
@@ -175,24 +175,30 @@ void TabBar::buildTabContextMenu()
     tabContextMenu.addSeparator();
 
     QMenu *positionMenu = tabContextMenu.addMenu(tr("Tabbar position"));
+
     top = positionMenu->addAction(tr("Top"));
     top->setCheckable(true);
-    connect(top, SIGNAL(toggled(bool)), SLOT(setTopPosition()));
+    connect(top, &QAction::toggled, this, &TabBar::setTopPosition);
+
     bottom = positionMenu->addAction(tr("Bottom"));
     bottom->setCheckable(true);
-    connect(bottom, SIGNAL(toggled(bool)), SLOT(setBottomPosition()));
+    connect(bottom, &QAction::toggled, this, &TabBar::setBottomPosition);
+
     left = positionMenu->addAction(tr("Left"));
     left->setCheckable(true);
-    connect(left, SIGNAL(toggled(bool)), SLOT(setLeftPosition()));
+    connect(left, &QAction::toggled, this, &TabBar::setLeftPosition);
+
     right = positionMenu->addAction(tr("Right"));
     right->setCheckable(true);
-    connect(right, SIGNAL(toggled(bool)), SLOT(setRightPosition()));
+    connect(right, &QAction::toggled, this, &TabBar::setRightPosition);
+
     QActionGroup *positionGroup = new QActionGroup(positionMenu);
     positionGroup->addAction(top);
     positionGroup->addAction(bottom);
     positionGroup->addAction(left);
     positionGroup->addAction(right);
     positionGroup->setExclusive(true);
+
     top->setChecked(true);
 }
 
@@ -313,14 +319,17 @@ void TabBar::setShape(QTabBar::Shape shape)
         case QTabBar::TriangularNorth:
             top->setChecked(true);
             break;
+
         case QTabBar::RoundedSouth:
         case QTabBar::TriangularSouth:
             bottom->setChecked(true);
             break;
+
         case QTabBar::RoundedWest:
         case QTabBar::TriangularWest:
             left->setChecked(true);
             break;
+
         case QTabBar::RoundedEast:
         case QTabBar::TriangularEast:
             right->setChecked(true);
