@@ -3,20 +3,7 @@
 #include <include/callbacks.h>
 
 PreferencesDialog::PreferencesDialog(QWidget *parent) :
-        QDialog(parent, Qt::WindowTitleHint),
-        vbox(this),
-        tabWidget(this),
-        hBoxButtons(this),
-        buttonOk(this),
-        buttonApply(this),
-        interfaceWidget(this),
-        soundWidget(this),
-        dspWidget(this),
-        networkWidget(this),
-#ifdef HOTKEYS_ENABLED
-        hotkeysWidget(this),
-#endif
-        pluginsWidget(this)
+        QDialog(parent, Qt::WindowTitleHint)
 {
     setModal(true);
     setWindowTitle(tr("Preferences"));
@@ -31,7 +18,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     configureTabs();
     configureLayout();
     configureConnections();
-    this->resize(800, 600);
+
+    setLayout(&vbox);
+
+    resize(800, 600);
 }
 
 void PreferencesDialog::configureTabs()
@@ -50,7 +40,8 @@ void PreferencesDialog::configureTabs()
 void PreferencesDialog::configureLayout()
 {
     vbox.addWidget(&tabWidget);
-    vbox.addItem(&hBoxButtons);
+    // can cause segfault... some
+    vbox.addLayout(&hBoxButtons);
 }
 
 void PreferencesDialog::configureConnections()

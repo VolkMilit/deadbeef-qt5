@@ -23,26 +23,28 @@ namespace Ui {
     class PreferencesDialog;
 }
 
-class PreferencesDialog : public QDialog {
+class PreferencesDialog : public QDialog
+{
     Q_OBJECT
 public:
     PreferencesDialog(QWidget *parent = nullptr);
+    ~PreferencesDialog(){}
 
 private:
     QVBoxLayout vbox;
-    QTabWidget tabWidget;
+    QTabWidget tabWidget{this};
     QHBoxLayout hBoxButtons;
-    QPushButton buttonOk;
-    QPushButton buttonApply;
+    QPushButton buttonOk{this};
+    QPushButton buttonApply{this};
 
-    InterfacePreferencesWidget interfaceWidget;
-    SoundPreferencesWidget soundWidget;
-    DspPreferencesWidget dspWidget;
-    NetworkPreferencesWidget networkWidget;
+    InterfacePreferencesWidget interfaceWidget{this};
+    SoundPreferencesWidget soundWidget{this};
+    DspPreferencesWidget dspWidget{this};
+    NetworkPreferencesWidget networkWidget{this};
 #ifdef HOTKEYS_ENABLED
-    HotkeysWidget hotkeysWidget;
+    HotkeysWidget hotkeysWidget{this};
 #endif
-    PluginsPreferencesWidget pluginsWidget;
+    PluginsPreferencesWidget pluginsWidget{this};
 
     void configureTabs();
     void configureLayout();

@@ -35,7 +35,7 @@ protected:
     void loadIcons();
 
 private:
-    PreferencesDialog *prefDialog = nullptr;
+    PreferencesDialog prefDialog{this};
     static MainWindow *instance;
     enum ActionOnClose {
         Exit = 0,

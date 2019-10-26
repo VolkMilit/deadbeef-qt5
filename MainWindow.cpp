@@ -367,25 +367,13 @@ void MainWindow::on_actionAboutQt_triggered()
 
 void MainWindow::on_actionPreferences_triggered()
 {
-    //PreferencesDialog *prefDialog = new PreferencesDialog(this);
-    if (!prefDialog)
-    {
-        prefDialog = new PreferencesDialog(this);
+    connect(&prefDialog, &PreferencesDialog::setCloseOnMinimize, this, &MainWindow::setCloseOnMinimized);
+    connect(&prefDialog, &PreferencesDialog::setTrayIconHidden, this, &MainWindow::setTrayIconHidden);
+    //connect(&prefDialog, &PreferencesDialog::setTrayIconTheme, trayIcon, &SystemTrayIcon::setTrayTheme);
+    connect(&prefDialog, &PreferencesDialog::titlePlayingChanged, this, &MainWindow::titleSettingChanged);
+    connect(&prefDialog, &PreferencesDialog::titleStoppedChanged, this, &MainWindow::titleSettingChanged);
 
-        connect(prefDialog, &PreferencesDialog::setCloseOnMinimize, this, &MainWindow::setCloseOnMinimized);
-        connect(prefDialog, &PreferencesDialog::setTrayIconHidden, this, &MainWindow::setTrayIconHidden);
-        //connect(prefDialog, &PreferencesDialog::setTrayIconTheme, trayIcon, &SystemTrayIcon::setTrayTheme);
-        connect(prefDialog, &PreferencesDialog::titlePlayingChanged, this, &MainWindow::titleSettingChanged);
-        connect(prefDialog, &PreferencesDialog::titleStoppedChanged, this, &MainWindow::titleSettingChanged);
-
-        prefDialog->exec();
-
-        delete prefDialog;
-    }
-    else
-    {
-        prefDialog->activateWindow();
-    }
+    prefDialog.exec();
 }
 
 void MainWindow::on_actionSelectAll_triggered()
