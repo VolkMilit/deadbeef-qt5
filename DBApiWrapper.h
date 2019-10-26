@@ -8,7 +8,8 @@
 
 class QUrl;
 
-class DBApiWrapper : public QObject {
+class DBApiWrapper : public QObject
+{
 
     Q_OBJECT
 
@@ -23,7 +24,7 @@ public:
     void playTrackByIndex(int index);
 
     void addTracksByUrl(const QUrl &url, int position = -1);
-    
+
     static int onSongChanged(ddb_event_trackchange_t *ev);
     static int onPause();
     static int onPlaylistChanged();
@@ -37,6 +38,7 @@ signals:
     void playlistChanged();
     void trackChanged(DB_playItem_t *, DB_playItem_t *);
     void playbackPaused();
+    void playbackElapsed();
     void deadbeefActivated();
 };
 

@@ -40,6 +40,7 @@ int DBApiWrapper::onSongChanged(ddb_event_trackchange_t *ev)
 int DBApiWrapper::onPause()
 {
     DBApiWrapper::Instance()->isPaused = !DBApiWrapper::Instance()->isPaused;
+    qDebug() << DBApiWrapper::Instance()->isPaused;
     emit DBApiWrapper::Instance()->playbackPaused();
     return 0;
 }
@@ -49,7 +50,6 @@ int DBApiWrapper::onDeadbeefActivated()
     emit WRAPPER->deadbeefActivated();
     return 0;
 }
-
 
 void DBApiWrapper::addTracksByUrl(const QUrl &url, int position)
 {
@@ -61,12 +61,14 @@ void DBApiWrapper::addTracksByUrl(const QUrl &url, int position)
         DBAPI->plt_insert_file(DBAPI->plt_get_curr(), track, url.toString().toUtf8().data(), &pabort, 0, 0);
 }
 
-void DBApiWrapper::sendPlayMessage(uint32_t id) {
+void DBApiWrapper::sendPlayMessage(uint32_t id)
+{
     DBApiWrapper::Instance()->isPaused = false;
     DBAPI->sendmessage(id, 0, 0, 0);
 }
 
-void DBApiWrapper::playTrackByIndex(int index) {
+void DBApiWrapper::playTrackByIndex(int index)
+{
     DBApiWrapper::Instance()->isPaused = false;
     DBAPI->sendmessage(DB_EV_PLAY_NUM, 0, index, 0);
 }

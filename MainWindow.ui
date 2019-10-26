@@ -166,7 +166,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionStop"/>
-   <addaction name="actionPlay"/>
    <addaction name="actionPause"/>
    <addaction name="actionPrev"/>
    <addaction name="actionNext"/>

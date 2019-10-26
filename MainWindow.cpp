@@ -91,12 +91,23 @@ void MainWindow::createConnections()
         DB_playItem_s *it = DBAPI->streamer_get_playing_track();
         updateStatusBar(it);
     });
+
+    connect(DBApiWrapper::Instance(), &DBApiWrapper::playbackPaused, [this](){
+        if (DBApiWrapper::Instance()->isPaused)
+            ui->actionPause->setIcon(getStockIcon(this, "media-playback-start", QStyle::SP_MediaPlay));
+        else
+            ui->actionPause->setIcon(getStockIcon(this, "media-playback-pause", QStyle::SP_MediaPause));
+    });
 }
 
 void MainWindow::loadIcons()
-{
-    ui->actionPlay->setIcon(getStockIcon(this, "media-playback-start", QStyle::SP_MediaPlay));
-    ui->actionPause->setIcon(getStockIcon(this, "media-playback-pause", QStyle::SP_MediaPause));
+{  
+    if (DBApiWrapper::Instance()->isPaused)
+        ui->actionPause->setIcon(getStockIcon(this, "media-playback-start", QStyle::SP_MediaPlay));
+    else
+        ui->actionPause->setIcon(getStockIcon(this, "media-playback-pause", QStyle::SP_MediaPause));
+
+    //ui->actionPlay->setIcon(getStockIcon(this, "media-playback-start", QStyle::SP_MediaPlay));
     ui->actionStop->setIcon(getStockIcon(this, "media-playback-stop", QStyle::SP_MediaStop));
     ui->actionPrev->setIcon(getStockIcon(this, "media-skip-backward", QStyle::SP_MediaSkipBackward));
     ui->actionNext->setIcon(getStockIcon(this, "media-skip-forward", QStyle::SP_MediaSkipForward));
@@ -274,6 +285,7 @@ void MainWindow::on_actionPrev_triggered()
 void MainWindow::on_actionPause_triggered()
 {
     DBAPI->sendmessage(DB_EV_TOGGLE_PAUSE, 0, 0, 0);
+    //emit DBApiWrapper::Instance()->playbackPaused();
 }
 
 void MainWindow::trayIcon_activated(QSystemTrayIcon::ActivationReason reason)
@@ -655,7 +667,7 @@ void MainWindow::loadConfig()
     if (ui->actionBlockToolbarChanges->isChecked())
         coverArtWidget.setTitleBarWidget(new QWidget());
     else
-        coverArtWidget.setTitleBarWidget(0);
+        coverArtWidget.setTitleBarWidget(nullptr);
 #endif
 
     switch (DBAPI->conf_get_int("playback.order", PLAYBACK_ORDER_LINEAR))
