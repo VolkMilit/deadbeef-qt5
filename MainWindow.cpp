@@ -87,6 +87,12 @@ void MainWindow::createConnections()
         else
             ui->actionPause->setIcon(getStockIcon(this, "media-playback-pause", QStyle::SP_MediaPause));
     });
+
+    connect(&prefDialog, &PreferencesDialog::setCloseOnMinimize, this, &MainWindow::setCloseOnMinimized);
+    connect(&prefDialog, &PreferencesDialog::setTrayIconHidden, this, &MainWindow::setTrayIconHidden);
+    //connect(&prefDialog, &PreferencesDialog::setTrayIconTheme, trayIcon, &SystemTrayIcon::setTrayTheme);
+    connect(&prefDialog, &PreferencesDialog::titlePlayingChanged, this, &MainWindow::titleSettingChanged);
+    connect(&prefDialog, &PreferencesDialog::titleStoppedChanged, this, &MainWindow::titleSettingChanged);
 }
 
 void MainWindow::loadIcons()
@@ -367,12 +373,6 @@ void MainWindow::on_actionAboutQt_triggered()
 
 void MainWindow::on_actionPreferences_triggered()
 {
-    connect(&prefDialog, &PreferencesDialog::setCloseOnMinimize, this, &MainWindow::setCloseOnMinimized);
-    connect(&prefDialog, &PreferencesDialog::setTrayIconHidden, this, &MainWindow::setTrayIconHidden);
-    //connect(&prefDialog, &PreferencesDialog::setTrayIconTheme, trayIcon, &SystemTrayIcon::setTrayTheme);
-    connect(&prefDialog, &PreferencesDialog::titlePlayingChanged, this, &MainWindow::titleSettingChanged);
-    connect(&prefDialog, &PreferencesDialog::titleStoppedChanged, this, &MainWindow::titleSettingChanged);
-
     prefDialog.exec();
 }
 
