@@ -98,11 +98,11 @@ void PluginsPreferencesWidget::loadPluginInfo(int item)
         conf.get_param = conf_get_str;
         configurePluginSettingsPanel(&conf);
     }
-    else
+    /*else
     {
         if (settingsWidget)
             delete settingsWidget;
-    }
+    }*/
 
     spacer = new QSpacerItem(10, 5, QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui->scrollAreaWidgetContents->layout()->addItem(spacer);

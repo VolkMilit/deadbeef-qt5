@@ -8,6 +8,7 @@
 #include <QFormLayout>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QRegExp>
 
 #include "include/parser.h"
 #include "QFileRequester.h"
@@ -18,11 +19,13 @@ extern ddb_dsp_context_t *current_dsp_context;
 extern ddb_dsp_context_t *dsp_chain;
 
 PluginSettingsWidget::PluginSettingsWidget(ddb_dialog_t *conf, QWidget *parent):
-        QGroupBox(parent)
+        QGroupBox(parent),
+        layout(new QFormLayout(parent))
 {
     setTitle(tr("Settings"));
     isDsp = false;
     configureWidgets(conf);
+    setLayout(layout);
 }
 
 PluginSettingsWidget::PluginSettingsWidget(ddb_dsp_context_t *dsp, QWidget *parent):
@@ -50,16 +53,146 @@ PluginSettingsWidget::~PluginSettingsWidget()
 
 void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog)
 {
-    layout = new QFormLayout(this);
-    bool HLayout = false;
+    //bool HLayout = false;
     
-    char token[MAX_TOKEN];
+    //char token[MAX_TOKEN];
     const char *script = settingsDialog->layout;
 
-    //qDebug() << script;
+    QStringList props = QString(script).split(";\n");
 
-    while ((script = gettoken(script, token)))
+    // hack, check if we have two property without newline
+    for (int i = 0; i < props.size(); i++)
     {
+        if (props[i].contains(";property"))
+        {
+            QStringList tmp = props[i].split(";property");
+
+            for (QString item : tmp)
+            {
+                if (item[0] == ';')
+                    item.replace(0, 1, QChar());
+
+                props.insert(i+1, item);
+            }
+        }
+    }
+
+    for (int i = 0; i < props.size(); i++)
+    {
+        QStringList prop = props[i].split(" ");
+        QString desc = "";
+
+        if (prop.size() < 5)
+        {
+            qDebug() << "Invalid property at line " << i+1;
+            continue;
+        }
+
+        if (prop[1] == "box")
+        {
+            qDebug() << "[box] Stub at line " << i+1;
+            continue;
+        }
+
+        for (int j = 0; j < prop.size(); j++)
+        {
+            if (!prop[0].contains("property"))
+            {
+                qDebug() << "Unknown property on line " << i+1;
+                break;
+            }
+
+            if (prop[j][0] == '"')
+            {
+                for (int p = j; p < prop.size(); p++)
+                {
+                    if (prop[p].back() == '"')
+                    {
+                        desc += " " + prop[p];
+                        break;
+                    }
+                    else
+                    {
+                        desc += " " + prop[p];
+                    }
+
+                    j++;
+                }
+
+                desc = desc.simplified().remove('"');
+            }
+
+            if (prop[j] == "checkbox")
+            {
+                QCheckBox *cb = new QCheckBox(this);
+                cb->setText(desc);
+                cb->setProperty("setting", prop[j + 1]);
+
+                if (prop[j + 2] == "1")
+                    cb->setCheckState(Qt::Checked);
+
+                layout->addWidget(cb);
+            }
+
+            if (prop[j] == "entry")
+            {
+                QHBoxLayout *l = new QHBoxLayout;
+                QLabel *descLabel = new QLabel;
+                QLineEdit *le = new QLineEdit;
+
+                descLabel->setText(desc);
+                le->setProperty("setting", prop[j + 1]);
+                le->setText(prop[j + 2]);
+
+                l->addWidget(descLabel);
+                l->addWidget(le);
+
+                layout->addItem(l);
+            }
+
+            if (prop[j] == "file")
+            {
+                QHBoxLayout *l = new QHBoxLayout;
+                QLabel *descLabel = new QLabel;
+                QFileRequester *rqs = new QFileRequester(prop[j + 2], this);
+
+                descLabel->setText(desc);
+
+                l->addWidget(descLabel);
+                l->addWidget(rqs);
+
+                layout->addItem(l);
+            }
+
+            if (prop[j].contains("select["))
+            {
+                int size = prop[j][7].digitValue();
+
+                QString setting = prop[j+1];
+                int defaultIndex = prop[j+2].toInt();
+
+                QComboBox *cb = new QComboBox(this);
+
+                for (int e = 0; e < size; e++)
+                {
+                    cb->addItem(prop[(j+3)+e]);
+                }
+
+                j += size;
+
+                cb->setCurrentIndex(defaultIndex-1);
+                cb->setProperty("setting", setting);
+
+                layout->addWidget(cb);
+            }
+        }
+    }
+
+    /*while ((script = gettoken(script, token)))
+    {
+        if (strcmp(token, ""))
+            continue;
+
         if (strcmp(token, "property"))
         {
             qDebug() << "invalid token while loading plugin " << settingsDialog->title << " config dialog: " << token << " at line " << parser_line;
@@ -120,12 +253,11 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog)
                 }
             }
 
-            /*
-            char semicolon[MAX_TOKEN];
-            while ((script = gettoken_warn_eof(script, semicolon)))
-                if (!strcmp (semicolon, ";"))
-                    break;
-            */
+
+            //char semicolon[MAX_TOKEN];
+            //while ((script = gettoken_warn_eof(script, semicolon)))
+            //    if (!strcmp (semicolon, ";"))
+            //        break;
             continue;
         }
         
@@ -292,9 +424,7 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog)
             qDebug() << "expected `;' while loading plugin " << settingsDialog->title << " config dialog: "<< token << " at line " << parser_line;
             break;
         }
-    }
-
-    setLayout(layout);
+    }*/
 }
 
 void PluginSettingsWidget::addEntry(QLayout *layout, QWidget *prop, bool HLayout)
