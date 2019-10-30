@@ -28,7 +28,8 @@ DB_artwork_plugin_t *coverart_plugin;
 #endif
 
 extern "C" {
-    DB_plugin_t *ddb_gui_Qt_load(DB_functions_t *api) {
+    DB_plugin_t *ddb_gui_Qt_load(DB_functions_t *api)
+    {
         deadbeef = api;
         plugin.plugin.api_vmajor = DB_API_VERSION_MAJOR;
         plugin.plugin.api_vminor = DB_API_VERSION_MINOR;
@@ -55,12 +56,15 @@ static int pluginMessage(uint32_t id, uintptr_t ctx, uint32_t p1, uint32_t p2)
         case DB_EV_SONGCHANGED:
             WRAPPER->onSongChanged((ddb_event_trackchange_t *)ctx);
             break;
+
         case DB_EV_PAUSED:
             WRAPPER->onPause();
             break;
+
         case DB_EV_PLAYLISTCHANGED:
             WRAPPER->onPlaylistChanged();
             break;
+
         case DB_EV_ACTIVATED:
             WRAPPER->onDeadbeefActivated();
             break;
@@ -133,11 +137,8 @@ void MainThreadRun(void *)
     translator.load(QString::fromUtf8(DEADBEEF_PREFIX) + QString("/share/deadbeef/translations/QtGui_") + locale);
     app.installTranslator(&translator);
 
-    //MainWindow w;
-    //w.show();
-    
-    //qDebug() << MainWindow::Instance();
-    MainWindow::Instance()->show();
+    MainWindow w;
+    w.show();
+
     app.exec();
-    MainWindow::Destroy();
 }
