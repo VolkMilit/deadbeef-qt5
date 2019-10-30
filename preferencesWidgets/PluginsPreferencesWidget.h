@@ -32,6 +32,8 @@ class PluginsPreferencesWidget : public QWidget
 public:
     PluginsPreferencesWidget(QWidget *parent = 0, Qt::WindowFlags f = nullptr);
     ~PluginsPreferencesWidget();
+
+    void saveSettings();
     
 private:
     Ui::PluginsPreferencesWidget *ui;

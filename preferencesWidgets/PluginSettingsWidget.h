@@ -17,24 +17,24 @@ public:
     PluginSettingsWidget(ddb_dsp_context_t *dsp, QWidget *parent = nullptr);
     ~PluginSettingsWidget();
 
-private:
-    void configureWidgets(ddb_dialog_t *settingsDialog);
-    QLabel *label;
-    QWidget *prop;
-    QLayout *layout;
-    QHBoxLayout *hbox;
-    QPushButton *btn;
-    
-    bool isDsp = false;
-    
-    void addEntryWithLabel(QLayout *layout, QLabel *label, QWidget *prop, bool HLayout = false);
-    void addEntry(QLayout *layout, QWidget *prop, bool HLayout = false);
+    private:
+        void configureWidgets(ddb_dialog_t *settingsDialog);
+        QLabel *label;
+        QWidget *prop;
+        QLayout *layout;
+        QHBoxLayout *hbox;
+        QPushButton *btn;
 
-    QHash<QWidget *, QString> keys;
+        bool isDsp = false;
 
-public slots:
-    void saveProperty();
-    void killDialog();
+        void addEntryWithLabel(QLayout *layout, QLabel *label, QWidget *prop, bool HLayout = false);
+        void addEntry(QLayout *layout, QWidget *prop, bool HLayout = false);
+
+        QMap<QWidget *, QString> keys;
+
+    public slots:
+        void saveProperty();
+        void killDialog();
 };
 
 #endif // PLUGINSETTINGSWIDGET_H

@@ -79,41 +79,41 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog)
 
     for (int i = 0; i < props.size(); i++)
     {
-        QStringList prop = props[i].split(" ");
+        QStringList currProp = props[i].split(" ");
         QString desc = "";
 
-        if (prop.size() < 5)
+        if (currProp.size() < 5)
         {
             qDebug() << "Invalid property at line " << i+1;
             continue;
         }
 
-        if (prop[1] == "box")
+        if (currProp[1] == "box")
         {
             qDebug() << "[box] Stub at line " << i+1;
             continue;
         }
 
-        for (int j = 0; j < prop.size(); j++)
+        for (int j = 0; j < currProp.size(); j++)
         {
-            if (!prop[0].contains("property"))
+            if (!currProp[0].contains("property"))
             {
                 qDebug() << "Unknown property on line " << i+1;
                 break;
             }
 
-            if (prop[j][0] == '"')
+            if (currProp[j][0] == '"')
             {
-                for (int p = j; p < prop.size(); p++)
+                for (int p = j; p < currProp.size(); p++)
                 {
-                    if (prop[p].back() == '"')
+                    if (currProp[p].back() == '"')
                     {
-                        desc += " " + prop[p];
+                        desc += " " + currProp[p];
                         break;
                     }
                     else
                     {
-                        desc += " " + prop[p];
+                        desc += " " + currProp[p];
                     }
 
                     j++;
@@ -122,67 +122,68 @@ void PluginSettingsWidget::configureWidgets(ddb_dialog_t *settingsDialog)
                 desc = desc.simplified().remove('"');
             }
 
-            if (prop[j] == "checkbox")
+            if (currProp[j] == "checkbox")
             {
                 QCheckBox *cb = new QCheckBox(this);
                 cb->setText(desc);
-                cb->setProperty("setting", prop[j + 1]);
 
-                if (prop[j + 2] == "1")
+                if (currProp[j + 2] == "1")
                     cb->setCheckState(Qt::Checked);
 
+                keys.insert(cb, currProp[j+1]);
                 layout->addWidget(cb);
             }
 
-            if (prop[j] == "entry")
+            if (currProp[j] == "entry")
             {
                 QHBoxLayout *l = new QHBoxLayout;
                 QLabel *descLabel = new QLabel;
                 QLineEdit *le = new QLineEdit;
 
                 descLabel->setText(desc);
-                le->setProperty("setting", prop[j + 1]);
-                le->setText(prop[j + 2]);
+                le->setText(currProp[j + 2]);
 
                 l->addWidget(descLabel);
                 l->addWidget(le);
 
+                keys.insert(le, currProp[j+1]);
                 layout->addItem(l);
             }
 
-            if (prop[j] == "file")
+            if (currProp[j] == "file")
             {
                 QHBoxLayout *l = new QHBoxLayout;
                 QLabel *descLabel = new QLabel;
-                QFileRequester *rqs = new QFileRequester(prop[j + 2], this);
+                QFileRequester *rqs = new QFileRequester(currProp[j + 2], this);
 
                 descLabel->setText(desc);
 
                 l->addWidget(descLabel);
                 l->addWidget(rqs);
 
+                keys.insert(rqs, currProp[j+1]);
                 layout->addItem(l);
             }
 
-            if (prop[j].contains("select["))
+            if (currProp[j].contains("select["))
             {
-                int size = prop[j][7].digitValue();
+                int size = currProp[j][7].digitValue();
 
-                QString setting = prop[j+1];
-                int defaultIndex = prop[j+2].toInt();
+                QString setting = currProp[j+1];
+                int defaultIndex = currProp[j+2].toInt();
 
                 QComboBox *cb = new QComboBox(this);
 
                 for (int e = 0; e < size; e++)
                 {
-                    cb->addItem(prop[(j+3)+e]);
+                    cb->addItem(currProp[(j+3)+e]);
                 }
 
                 j += size;
 
                 cb->setCurrentIndex(defaultIndex-1);
-                cb->setProperty("setting", setting);
 
+                keys.insert(cb, setting);
                 layout->addWidget(cb);
             }
         }
@@ -457,6 +458,7 @@ void PluginSettingsWidget::addEntryWithLabel(QLayout *layout, QLabel *label, QWi
         formLayout->addRow(label, prop);
     }
 }
+
 void PluginSettingsWidget::killDialog()
 {
     saveProperty();
@@ -465,32 +467,41 @@ void PluginSettingsWidget::killDialog()
 
 void PluginSettingsWidget::saveProperty()
 {
-    if (QWidget *widget = qobject_cast<QWidget *>(QObject::sender()))
+    int num = 0;
+    QMap<QWidget *, QString>::const_iterator i;
+
+    for (i = keys.constBegin(); i != keys.constEnd(); ++i)
     {
+        QString setting = i.value();
+
         QString val = "";
 
-        if (QLineEdit *lineEdit = qobject_cast<QLineEdit *>(widget))
+        if (QLineEdit *lineEdit = qobject_cast<QLineEdit *>(i.key()))
             val = lineEdit->text();
-        else if (QCheckBox *checkBox = qobject_cast<QCheckBox *>(widget))
+        else if (QCheckBox *checkBox = qobject_cast<QCheckBox *>(i.key()))
             val = checkBox->isChecked() ? "1" : "0";
-        else if (QComboBox *comboBox = qobject_cast<QComboBox *>(widget))
+        else if (QComboBox *comboBox = qobject_cast<QComboBox *>(i.key()))
             val = QString("%1").arg(comboBox->currentIndex());
-        else if (QDoubleSpinBox *spinBox = qobject_cast<QDoubleSpinBox *>(widget))
+        else if (QDoubleSpinBox *spinBox = qobject_cast<QDoubleSpinBox *>(i.key()))
             val = QString("%1").arg(spinBox->value());
-        else if (QDoubleSlider *slider = qobject_cast<QDoubleSlider *>(widget))
+        else if (QDoubleSlider *slider = qobject_cast<QDoubleSlider *>(i.key()))
             val = QString("%1").arg(slider->value());
-        else if (QFileRequester *fileRequester = qobject_cast<QFileRequester *>(widget))
+        else if (QFileRequester *fileRequester = qobject_cast<QFileRequester *>(i.key()))
             val = QString("%1").arg(fileRequester->text());
-        
+
+        qDebug() << "Saving " << setting << " to value " << val << "...";
+
         if (isDsp && current_dsp_context)
         {
-            if (!val.isEmpty())
-                current_dsp_context->plugin->set_param(current_dsp_context, keys.value(widget).toInt(), val.toUtf8().constData());
+            current_dsp_context->plugin->set_param(current_dsp_context, num, setting.toLatin1());
+            num++;
         }
         else
         {
-            DBAPI->conf_set_str(keys.value(widget).toUtf8().constData(), val.toUtf8().constData());
+            DBAPI->conf_set_str(setting.toLatin1(), val.toLatin1());
             DBAPI->sendmessage(DB_EV_CONFIGCHANGED, 0, 0, 0);
         }
     }
+
+    DBAPI->conf_save();
 }

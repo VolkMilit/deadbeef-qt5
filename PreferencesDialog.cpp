@@ -40,7 +40,6 @@ void PreferencesDialog::configureTabs()
 void PreferencesDialog::configureLayout()
 {
     vbox.addWidget(&tabWidget);
-    // can cause segfault... some
     vbox.addLayout(&hBoxButtons);
 }
 
@@ -57,11 +56,13 @@ void PreferencesDialog::configureConnections()
 
 void PreferencesDialog::on_buttonOk_clicked()
 {
+    pluginsWidget.saveSettings();
     DBAPI->sendmessage(DB_EV_CONFIGCHANGED, 0, 0, 0);
     close();
 }
 
 void PreferencesDialog::on_buttonApply_clicked()
 {
+    pluginsWidget.saveSettings();
     DBAPI->sendmessage(DB_EV_CONFIGCHANGED, 0, 0, 0);
 }

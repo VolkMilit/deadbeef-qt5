@@ -25,6 +25,11 @@ PluginsPreferencesWidget::~PluginsPreferencesWidget()
     delete ui;
 }
 
+void PluginsPreferencesWidget::saveSettings()
+{
+    settingsWidget->saveProperty();
+}
+
 void PluginsPreferencesWidget::createPluginsSettings()
 {
     QList<int> sizes;
