@@ -20,8 +20,6 @@
 #include <QFutureWatcher>
 #include "DBFileDialog.h"
 
-MainWindow *MainWindow::instance = nullptr;
-
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
@@ -48,20 +46,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->PlayBackToolBar->show();
 
     ui->statusBar->addWidget(&status);
-}
-
-void MainWindow::Destroy()
-{
-    if (instance != nullptr)
-        delete instance;
-}
-
-MainWindow *MainWindow::Instance()
-{
-    if (instance == nullptr)
-        instance = new MainWindow();
-    
-    return instance;
 }
 
 MainWindow::~MainWindow()

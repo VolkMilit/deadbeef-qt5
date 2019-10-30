@@ -25,8 +25,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    static MainWindow *Instance();
-    static void Destroy();
 
 protected:
     void changeEvent(QEvent *);
